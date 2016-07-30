@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <title>Vapor Documentation</title>
+
+        <link rel="stylesheet" href="/css/bootstrap.min.css">
+        <link rel="stylesheet" href="/css/font-awesome.min.css">
+        <link rel="stylesheet" href="/css/highlight.tomorrow-night.css">
+        <link rel="stylesheet" href="/css/main.css">
+    </head>
+    <body>
+
+        <header class="navbar navbar-default navbar-fixed-top">
+
+            <a class="navbar-brand" href="/">
+                Vapor Documentation
+                <small class="hidden-xs hidden-sm">
+                    A web framework and server for Swift that works on macOS and Ubuntu.
+                </small>
+            </a>
+
+            
+        </header>
+
+        <main class="container-fluid">
+            <div class="row">
+
+                
+                    <nav id="sidebar" class="col-sm-3 col-lg-2" role="navigation">
+
+                                                    <p class="text-muted">
+                                Links
+                            </p>
+
+                            <ul class="nav nav-pills nav-stacked">
+                                                                    <li class="">
+                                        <a href="http://qutheory.io">
+                                            Qutheory.io
+                                        </a>
+                                    </li>
+                                                                    <li class="">
+                                        <a href="http://example.qutheory.io">
+                                            Example
+                                        </a>
+                                    </li>
+                                                                    <li class="">
+                                        <a href="https://github.com/qutheory/vapor">
+                                            GitHub
+                                        </a>
+                                    </li>
+                                                                    <li class="">
+                                        <a href="https://twitter.com/@qutheory">
+                                            Twitter
+                                        </a>
+                                    </li>
+                                                                    <li class="">
+                                        <a href="http://slack.qutheory.io">
+                                            Slack
+                                        </a>
+                                    </li>
+                                                            </ul>
+                                                    <p class="text-muted">
+                                Getting Started
+                            </p>
+
+                            <ul class="nav nav-pills nav-stacked">
+                                                                    <li class="">
+                                        <a href="/getting-started/install-swift-3-macos.html">
+                                            Install Swift 3: macOS
+                                        </a>
+                                    </li>
+                                                                    <li class="">
+                                        <a href="/getting-started/install-swift-3-ubuntu.html">
+                                            Install Swift 3: Ubuntu
+                                        </a>
+                                    </li>
+                                                                    <li class="">
+                                        <a href="/getting-started/install-swift-3.html">
+                                            Install Swift 3
+                                        </a>
+                                    </li>
+                                                                    <li class="">
+                                        <a href="/getting-started/install-toolbox.html">
+                                            Install Toolbox
+                                        </a>
+                                    </li>
+                                                                    <li class="active">
+                                        <a href="/getting-started/hello-world.html">
+                                            Hello, World
+                                        </a>
+                                    </li>
+                                                            </ul>
+                                                    <p class="text-muted">
+                                Guide
+                            </p>
+
+                            <ul class="nav nav-pills nav-stacked">
+                                                                    <li class="">
+                                        <a href="/guide/routing.html">
+                                            Routing
+                                        </a>
+                                    </li>
+                                                            </ul>
+                        
+                    </nav>
+
+                
+                <section class="col-sm-offset-3 col-lg-offset-2 col-sm-9 col-lg-10">
+                    <h1 id="hello-world">Hello, World</h1>
+<p>This section assumes you have installed Swift 3 and the Vapor Toolbox and have verified they are working.</p>
+<h2 id="new-project">New Project</h2>
+<p>Let's start by creating a new project called Hello, World</p>
+<pre><code class="language-sh">vapor new Hello</code></pre>
+<p>Vapor's folder structure will probably look familiar to you if you have worked with other web frameworks.</p>
+<pre><code>.
+├── App
+│   └── Controllers
+│   └── Middleware
+│   └── Models
+│   └── main.swift
+├── Public
+├── Resources
+│   └── Views
+└── Package.swift</code></pre>
+<p>For our Hello, World project, we will be focusing on the <code>main.swift</code> file.</p>
+<pre><code>.
+└── App
+    └── main.swift</code></pre>
+<p>Note: The <code>vapor new</code> command creates a new project with examples and comments about how to use the framework. You can delete these if you want.</p>
+<h2 id="droplet">Droplet</h2>
+<p>Look for the following line in the <code>main.swift</code> file.</p>
+<pre><code class="language-swift">let drop = Droplet()</code></pre>
+<p>This is where the one and only <code>Droplet</code>for this example will be created. The <code>Droplet</code> class has a plethora of useful functions on it, and is used extensively.</p>
+<h2 id="routing">Routing</h2>
+<p>Right after the creation of <code>drop</code>, add the following code snippet.</p>
+<pre><code class="language-swift">drop.get("hello") { request in
+    return "Hello, world!"
+}</code></pre>
+<p>This creates a new route on the <code>Droplet</code> that will match all <code>GET</code> requests to <code>/hello</code>.</p>
+<p>All route closures are passed an instance of <a href="/guide/request.html">Request</a> that contains information such as the URI requested and data sent.</p>
+<p>This route simply returns a string, but anything that is <a href="/guide/routing.html">ResponseRepresentable</a> can be returned. Learn more in the <a href="/guide/routing.html">Routing</a> section of the guide.</p>
+<h2 id="serving">Serving</h2>
+<p>At the bottom of the main file, make sure to serve your <code>Droplet</code>.</p>
+<pre><code class="language-swift">drop.serve()</code></pre>
+<p>Save the file, and switch back to the terminal.</p>
+<h2 id="compiling">Compiling</h2>
+<p>A big part of what makes Vapor so great is Swift's state of the art compiler. Let's fire it up. Make sure you are in the root directory of the project and run the following command.</p>
+<pre><code class="language-swift">vapor build</code></pre>
+<p>Note: <code>vapor build</code> runs <code>swift build</code> in the background.</p>
+<p>The Swift Package Manager will first start by downloading the appropriate dependencies from git. It will then compile and link these dependencies together.</p>
+<p>When the process has completed, you will see <code>Building Project [Done]</code></p>
+<p>Note: If you see a message like <code>unable to execute command: Killed</code>, you need to increase your swap space. This can happen if you are running on a machine with limited memory.</p>
+<h2 id="run">Run</h2>
+<p>Boot up the server by running the following command.</p>
+<pre><code class="language-swift">vapor run serve</code></pre>
+<p>You should see a message <code>Server starting...</code>. You can now visit <code>http://localhost:8080/hello</code> in your browser.</p>
+<p>Note: Certain port numbers require super user access to bind. Simply run <code>sudo vapor run</code> to allow access. If you decide to run on a port besides <code>80</code>, make sure to direct your browser accordingly.</p>
+<h2 id="hello-world-1">Hello, World</h2>
+<p>You should see the following output in your browser window.</p>
+<pre><code>Hello, world!</code></pre>
+                </section>
+
+            </div>
+        </main>
+
+        <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+        <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+        <script src="//yandex.st/highlightjs/7.5/highlight.min.js"></script>
+
+        <script>
+            $(function() {
+                $("section>h1").wrap('<div class="page-header" />');
+                // Syntax highlighting
+                hljs.initHighlightingOnLoad();
+            });
+        </script>
+
+    </body>
+</html>
