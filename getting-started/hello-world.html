@@ -6,16 +6,16 @@
 
         <title>Vapor Documentation</title>
 
-        <link rel="stylesheet" href="/css/bootstrap.min.css">
-        <link rel="stylesheet" href="/css/font-awesome.min.css">
-        <link rel="stylesheet" href="/css/highlight.tomorrow-night.css">
-        <link rel="stylesheet" href="/css/main.css">
+        <link rel="stylesheet" href="https://qutheory.github.io/documentation/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://qutheory.github.io/documentation/css/font-awesome.min.css">
+        <link rel="stylesheet" href="https://qutheory.github.io/documentation/css/highlight.tomorrow-night.css">
+        <link rel="stylesheet" href="https://qutheory.github.io/documentation/css/main.css">
     </head>
     <body>
 
         <header class="navbar navbar-default navbar-fixed-top">
 
-            <a class="navbar-brand" href="/">
+            <a class="navbar-brand" href="https://qutheory.github.io/documentation/">
                 Vapor Documentation
                 <small class="hidden-xs hidden-sm">
                     A web framework and server for Swift that works on macOS and Ubuntu.
@@ -68,27 +68,27 @@
 
                             <ul class="nav nav-pills nav-stacked">
                                                                     <li class="">
-                                        <a href="/getting-started/install-swift-3-macos.html">
+                                        <a href="https://qutheory.github.io/documentation/getting-started/install-swift-3-macos.html">
                                             Install Swift 3: macOS
                                         </a>
                                     </li>
                                                                     <li class="">
-                                        <a href="/getting-started/install-swift-3-ubuntu.html">
+                                        <a href="https://qutheory.github.io/documentation/getting-started/install-swift-3-ubuntu.html">
                                             Install Swift 3: Ubuntu
                                         </a>
                                     </li>
                                                                     <li class="">
-                                        <a href="/getting-started/install-swift-3.html">
+                                        <a href="https://qutheory.github.io/documentation/getting-started/install-swift-3.html">
                                             Install Swift 3
                                         </a>
                                     </li>
                                                                     <li class="">
-                                        <a href="/getting-started/install-toolbox.html">
+                                        <a href="https://qutheory.github.io/documentation/getting-started/install-toolbox.html">
                                             Install Toolbox
                                         </a>
                                     </li>
                                                                     <li class="active">
-                                        <a href="/getting-started/hello-world.html">
+                                        <a href="https://qutheory.github.io/documentation/getting-started/hello-world.html">
                                             Hello, World
                                         </a>
                                     </li>
@@ -99,7 +99,7 @@
 
                             <ul class="nav nav-pills nav-stacked">
                                                                     <li class="">
-                                        <a href="/guide/routing.html">
+                                        <a href="https://qutheory.github.io/documentation/guide/routing.html">
                                             Routing
                                         </a>
                                     </li>
@@ -140,8 +140,8 @@
     return "Hello, world!"
 }</code></pre>
 <p>This creates a new route on the <code>Droplet</code> that will match all <code>GET</code> requests to <code>/hello</code>.</p>
-<p>All route closures are passed an instance of <a href="/guide/request.html">Request</a> that contains information such as the URI requested and data sent.</p>
-<p>This route simply returns a string, but anything that is <a href="/guide/routing.html">ResponseRepresentable</a> can be returned. Learn more in the <a href="/guide/routing.html">Routing</a> section of the guide.</p>
+<p>All route closures are passed an instance of <a href="{{baseUrl}}/guide/request.html">Request</a> that contains information such as the URI requested and data sent.</p>
+<p>This route simply returns a string, but anything that is <a href="{{baseUrl}}/guide/routing.html">ResponseRepresentable</a> can be returned. Learn more in the <a href="{{baseUrl}}/guide/routing.html">Routing</a> section of the guide.</p>
 <h2 id="serving">Serving</h2>
 <p>At the bottom of the main file, make sure to serve your <code>Droplet</code>.</p>
 <pre><code class="language-swift">drop.serve()</code></pre>
