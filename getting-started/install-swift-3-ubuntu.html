@@ -111,6 +111,10 @@ sudo apt-get install clang libicu-dev binutils git</code></pre>
             $(function() {
                 // Syntax highlighting
                 hljs.initHighlightingOnLoad();
+
+                if (navigator.userAgent.indexOf('Safari') != -1 && navigator.userAgent.indexOf('Chrome') == -1) {
+                    $('body').addClass('safari');
+                }
             });
         </script>
 
