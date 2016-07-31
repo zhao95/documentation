@@ -47,7 +47,7 @@
                                 Install Swift 3: macOS
                             </a>
                         </li>
-                                            <li class="active">
+                                            <li class="">
                             <a href="https://qutheory.github.io/documentation/getting-started/install-swift-3-ubuntu.html">
                                 Install Swift 3: Ubuntu
                             </a>
@@ -77,7 +77,7 @@
                                 Droplet
                             </a>
                         </li>
-                                            <li class="">
+                                            <li class="active">
                             <a href="https://qutheory.github.io/documentation/guide/folder-structure.html">
                                 Folder Structure
                             </a>
@@ -94,14 +94,56 @@
 
         <main>
             <a href="https://github.com/qutheory/documentation/blob/master/CONTRIBUTING.md" class="edit">✎ Edit on GitHub</a>
-            <h1 id="install-swift-3-ubuntu">Install Swift 3: Ubuntu</h1>
-<p>To use Swift 3 on Ubuntu, you need to have its dependencies installed.</p>
-<h2 id="install">Install</h2>
-<p>Depending on your flavor of Ubuntu, you may need some additional tools for the compiler. We'll err on the safe side and install everything you should need</p>
-<pre><code class="language-sh">sudo apt-get update
-sudo apt-get install clang libicu-dev binutils git</code></pre>
-<h2 id="swift">Swift</h2>
-<p>You can now move on to <a href="install-swift-3.html">Install Swift 3</a></p>
+            <h1 id="folder-structure">Folder Structure</h1>
+<p>The first step to creating an awesome application is knowing where things are. If you created your project using the <a href="../getting-started/toolbox.html">Toolbox</a> or from a template, you will already have the folder structure created.</p>
+<p>If you are making a Vapor application from scratch, this will show you exactly how to set it up.</p>
+<h2 id="minimum-folder-structure">Minimum Folder Structure</h2>
+<p>We recommend putting all of your Swift code inside of the <code>App/</code> folder. This will allow you to create subfolders in <code>App/</code> to organize your models and resources.</p>
+<p>This works best with the Swift package manager's restrictions on how packages should be structured.</p>
+<pre><code>.
+├── App
+│   └── main.swift
+├── Public
+└── Package.swift</code></pre>
+<p>The <code>Public</code> folder is where all publicly accessible files should go. This folder will be automatically checked every time a URL is requested that is not found in your routes.</p>
+<blockquote>
+<p>Note: The <code>FileMiddleware</code> is responsible for accessing files from the <code>Public</code> folder.</p>
+</blockquote>
+<h2 id="models">Models</h2>
+<p>The <code>Models</code> folder is a recommendation of where you can put your database and other models, following the MVC pattern.</p>
+<pre><code>.
+├── App
+.   └── Models
+.       └── User.swift</code></pre>
+<h2 id="controllers">Controllers</h2>
+<p>The <code>Controllers</code> folder is a recommendation of where you can put your route controllers, following the MVC pattern.</p>
+<pre><code>.
+├── App
+.   └── Controllers
+.       └── UserController.swift</code></pre>
+<h2 id="views">Views</h2>
+<p>The <code>Views</code> folder in <code>Resources</code> is where Vapor will look when you render views.</p>
+<pre><code>.
+├── App
+└── Resources
+    └── Views
+         └── user.html</code></pre>
+<p>The following code would load the <code>user.html</code> file.</p>
+<pre><code class="language-swift">drop.view("user.html")</code></pre>
+<h2 id="config">Config</h2>
+<p>Vapor has a sophisticated configuration system that involves a hierarchy of configuration importance.</p>
+<pre><code>.
+├── App
+└── Config
+  └── app.json         // default app.json
+    └── development
+         └── app.json  // overrides app.json when in development environment
+    └── production
+         └── app.json  // overrides app.json when in production environment
+    └── secrets
+         └── app.json  // overrides app.json in all environments, ignored by git</code></pre>
+<p><code>.json</code> files are structured in the <code>Config</code> folder as shown above. The configuration will be applied dependant on where the <code>.json</code> file exists in the hierarchy. Learn more in <a href="config.html">Config</a>.</p>
+<p>Learn about changing environments (the <code>--env=</code> flag) in the <a href="droplet.html">Droplet</a> section.</p>
         </main>
 
         <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
