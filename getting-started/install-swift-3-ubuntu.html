@@ -6,110 +6,97 @@
 
         <title>Vapor Documentation</title>
 
-        <link rel="stylesheet" href="https://qutheory.github.io/documentation/css/bootstrap.min.css">
-        <link rel="stylesheet" href="https://qutheory.github.io/documentation/css/font-awesome.min.css">
-        <link rel="stylesheet" href="https://qutheory.github.io/documentation/css/highlight.tomorrow-night.css">
-        <link rel="stylesheet" href="https://qutheory.github.io/documentation/css/main.css">
+        <link rel="stylesheet"  href="https://fonts.googleapis.com/css?family=Source+Code+Pro">
+        <link rel="stylesheet"  href="https://fonts.googleapis.com/css?family=Quicksand:400,700,300">
+        <link rel="stylesheet" href="https://qutheory.github.io/documentation/styles/qutheory-code.css">
+        <link rel="stylesheet" href="https://qutheory.github.io/documentation/styles/main.css">
     </head>
     <body>
 
-        <header class="navbar navbar-default navbar-fixed-top">
-
-            <a class="navbar-brand" href="https://qutheory.github.io/documentation/">
-                Vapor Documentation
-                <small class="hidden-xs hidden-sm">
-                    A web framework and server for Swift that works on macOS and Ubuntu.
-                </small>
+        <header>
+            <a class="logo" href="https://qutheory.github.io/documentation/">
+                <img src="https://qutheory.github.io/documentation/images/droplet.svg" alt="Vapor">
+                <h1>Vapor <em>Docs</em></h1>
             </a>
-
-            
         </header>
 
-        <main class="container-fluid">
-            <div class="row">
+        <nav>
+            <div class="scroll">
+                            <section>
+                    <h3>Links</h3>
+                    <ul>
+                                            <li class="">
+                            <a href="http://qutheory.io">
+                                Qutheory.io
+                            </a>
+                        </li>
+                                            <li class="">
+                            <a href="http://example.qutheory.io">
+                                Example
+                            </a>
+                        </li>
+                                            <li class="">
+                            <a href="https://github.com/qutheory/vapor">
+                                GitHub
+                            </a>
+                        </li>
+                                            <li class="">
+                            <a href="https://twitter.com/@qutheory">
+                                Twitter
+                            </a>
+                        </li>
+                                            <li class="">
+                            <a href="http://slack.qutheory.io">
+                                Slack
+                            </a>
+                        </li>
+                                        </ul>
+                </section>
+                            <section>
+                    <h3>Getting Started</h3>
+                    <ul>
+                                            <li class="">
+                            <a href="https://qutheory.github.io/documentation/getting-started/install-swift-3-macos.html">
+                                Install Swift 3: macOS
+                            </a>
+                        </li>
+                                            <li class="active">
+                            <a href="https://qutheory.github.io/documentation/getting-started/install-swift-3-ubuntu.html">
+                                Install Swift 3: Ubuntu
+                            </a>
+                        </li>
+                                            <li class="">
+                            <a href="https://qutheory.github.io/documentation/getting-started/install-swift-3.html">
+                                Install Swift 3
+                            </a>
+                        </li>
+                                            <li class="">
+                            <a href="https://qutheory.github.io/documentation/getting-started/install-toolbox.html">
+                                Install Toolbox
+                            </a>
+                        </li>
+                                            <li class="">
+                            <a href="https://qutheory.github.io/documentation/getting-started/hello-world.html">
+                                Hello, World
+                            </a>
+                        </li>
+                                        </ul>
+                </section>
+                            <section>
+                    <h3>Guide</h3>
+                    <ul>
+                                            <li class="">
+                            <a href="https://qutheory.github.io/documentation/guide/routing.html">
+                                Routing
+                            </a>
+                        </li>
+                                        </ul>
+                </section>
+                        </div>
+        </nav>
 
-                
-                    <nav id="sidebar" class="col-sm-3 col-lg-2" role="navigation">
-
-                                                    <p class="text-muted">
-                                Links
-                            </p>
-
-                            <ul class="nav nav-pills nav-stacked">
-                                                                    <li class="">
-                                        <a href="http://qutheory.io">
-                                            Qutheory.io
-                                        </a>
-                                    </li>
-                                                                    <li class="">
-                                        <a href="http://example.qutheory.io">
-                                            Example
-                                        </a>
-                                    </li>
-                                                                    <li class="">
-                                        <a href="https://github.com/qutheory/vapor">
-                                            GitHub
-                                        </a>
-                                    </li>
-                                                                    <li class="">
-                                        <a href="https://twitter.com/@qutheory">
-                                            Twitter
-                                        </a>
-                                    </li>
-                                                                    <li class="">
-                                        <a href="http://slack.qutheory.io">
-                                            Slack
-                                        </a>
-                                    </li>
-                                                            </ul>
-                                                    <p class="text-muted">
-                                Getting Started
-                            </p>
-
-                            <ul class="nav nav-pills nav-stacked">
-                                                                    <li class="">
-                                        <a href="https://qutheory.github.io/documentation/getting-started/install-swift-3-macos.html">
-                                            Install Swift 3: macOS
-                                        </a>
-                                    </li>
-                                                                    <li class="active">
-                                        <a href="https://qutheory.github.io/documentation/getting-started/install-swift-3-ubuntu.html">
-                                            Install Swift 3: Ubuntu
-                                        </a>
-                                    </li>
-                                                                    <li class="">
-                                        <a href="https://qutheory.github.io/documentation/getting-started/install-swift-3.html">
-                                            Install Swift 3
-                                        </a>
-                                    </li>
-                                                                    <li class="">
-                                        <a href="https://qutheory.github.io/documentation/getting-started/install-toolbox.html">
-                                            Install Toolbox
-                                        </a>
-                                    </li>
-                                                                    <li class="">
-                                        <a href="https://qutheory.github.io/documentation/getting-started/hello-world.html">
-                                            Hello, World
-                                        </a>
-                                    </li>
-                                                            </ul>
-                                                    <p class="text-muted">
-                                Guide
-                            </p>
-
-                            <ul class="nav nav-pills nav-stacked">
-                                                                    <li class="">
-                                        <a href="https://qutheory.github.io/documentation/guide/routing.html">
-                                            Routing
-                                        </a>
-                                    </li>
-                                                            </ul>
-                        
-                    </nav>
-
-                
-                <section class="col-sm-offset-3 col-lg-offset-2 col-sm-9 col-lg-10">
-                    <h1 id="install-swift-3-ubuntu">Install Swift 3: Ubuntu</h1>
+        <main>
+            <h1 id="install-swift-3-ubuntu">Install Swift 3: Ubuntu</h1>
 <p>To use Swift 3 on Ubuntu, you need to have its dependencies installed.</p>
 <h2 id="install">Install</h2>
 <p>Depending on your flavor of Ubuntu, you may need some additional tools for the compiler. We'll err on the safe side and install everything you should need</p>
@@ -117,18 +104,13 @@
 sudo apt-get install clang libicu-dev binutils git</code></pre>
 <h2 id="swift">Swift</h2>
 <p>You can now move on to <a href="install-swift-3.html">Install Swift 3</a></p>
-                </section>
-
-            </div>
         </main>
 
         <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
-        <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
-        <script src="//yandex.st/highlightjs/7.5/highlight.min.js"></script>
+        <script src="https://qutheory.github.io/documentation/scripts/highlight.pack.js"></script>
 
         <script>
             $(function() {
-                $("section>h1").wrap('<div class="page-header" />');
                 // Syntax highlighting
                 hljs.initHighlightingOnLoad();
             });
