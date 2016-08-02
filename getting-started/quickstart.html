@@ -67,7 +67,7 @@
                                 Install Toolbox
                             </a>
                         </li>
-                                            <li class="active">
+                                            <li class="">
                             <a href="https://qutheory.github.io/documentation/getting-started/hello-world.html">
                                 Hello, World
                             </a>
@@ -129,58 +129,63 @@
 
         <main>
             <a href="https://github.com/qutheory/documentation/blob/master/CONTRIBUTING.md" class="edit">✎ Edit on GitHub</a>
-            <h1 id="hello-world">Hello, World</h1>
-<p>This section assumes you have installed Swift 3 and the Vapor Toolbox and have verified they are working.</p>
-<h2 id="new-project">New Project</h2>
-<p>Let's start by creating a new project called Hello, World</p>
-<pre><code class="language-sh">vapor new Hello</code></pre>
-<p>Vapor's folder structure will probably look familiar to you if you have worked with other web frameworks.</p>
-<pre><code>.
-├── App
-│   └── Controllers
-│   └── Middleware
-│   └── Models
-│   └── main.swift
-├── Public
-├── Resources
-│   └── Views
-└── Package.swift</code></pre>
-<p>For our Hello, World project, we will be focusing on the <code>main.swift</code> file.</p>
-<pre><code>.
-└── App
-    └── main.swift</code></pre>
-<p>Note: The <code>vapor new</code> command creates a new project with examples and comments about how to use the framework. You can delete these if you want.</p>
-<h2 id="droplet">Droplet</h2>
-<p>Look for the following line in the <code>main.swift</code> file.</p>
-<pre><code class="language-swift">let drop = Droplet()</code></pre>
-<p>This is where the one and only <code>Droplet</code>for this example will be created. The <code>Droplet</code> class has a plethora of useful functions on it, and is used extensively.</p>
-<h2 id="routing">Routing</h2>
-<p>Right after the creation of <code>drop</code>, add the following code snippet.</p>
-<pre><code class="language-swift">drop.get("hello") { request in
-    return "Hello, world!"
-}</code></pre>
-<p>This creates a new route on the <code>Droplet</code> that will match all <code>GET</code> requests to <code>/hello</code>.</p>
-<p>All route closures are passed an instance of <a href="../guide/request.html">Request</a> that contains information such as the URI requested and data sent.</p>
-<p>This route simply returns a string, but anything that is <a href="../guide/routing.html">ResponseRepresentable</a> can be returned. Learn more in the <a href="{../guide/routing.html">Routing</a> section of the guide.</p>
-<h2 id="serving">Serving</h2>
-<p>At the bottom of the main file, make sure to serve your <code>Droplet</code>.</p>
-<pre><code class="language-swift">drop.serve()</code></pre>
-<p>Save the file, and switch back to the terminal.</p>
-<h2 id="compiling">Compiling</h2>
-<p>A big part of what makes Vapor so great is Swift's state of the art compiler. Let's fire it up. Make sure you are in the root directory of the project and run the following command.</p>
-<pre><code class="language-swift">vapor build</code></pre>
-<p>Note: <code>vapor build</code> runs <code>swift build</code> in the background.</p>
-<p>The Swift Package Manager will first start by downloading the appropriate dependencies from git. It will then compile and link these dependencies together.</p>
-<p>When the process has completed, you will see <code>Building Project [Done]</code></p>
-<p>Note: If you see a message like <code>unable to execute command: Killed</code>, you need to increase your swap space. This can happen if you are running on a machine with limited memory.</p>
-<h2 id="run">Run</h2>
-<p>Boot up the server by running the following command.</p>
-<pre><code class="language-swift">vapor run serve</code></pre>
-<p>You should see a message <code>Server starting...</code>. You can now visit <code>http://localhost:8080/hello</code> in your browser.</p>
-<p>Note: Certain port numbers require super user access to bind. Simply run <code>sudo vapor run</code> to allow access. If you decide to run on a port besides <code>80</code>, make sure to direct your browser accordingly.</p>
-<h2 id="hello-world-1">Hello, World</h2>
-<p>You should see the following output in your browser window.</p>
-<pre><code>Hello, world!</code></pre>
+            <h1 id="vapor-quickstart">Vapor Quickstart</h1>
+<p>This document assumes that the appropriate version of Swift is installed for Vapor. Right now, this is visible on the <a href="https://github.com/qutheory/vapor#-environment">vapor</a> section of the repository.</p>
+<p>You can run the following to check compatibility:</p>
+<pre><code class="language-bash">curl -sL check.qutheory.io | bash</code></pre>
+<blockquote>
+<p>If you'd prefer to use our built in tool, you can find information <a href="install-toolbox.html">here</a></p>
+</blockquote>
+<h2 id="make-new-project-using-swiftpm">Make new project using SwiftPM</h2>
+<p>Open your terminal</p>
+<blockquote>
+<p>For our example, we'll be using the Desktop folder.</p>
+</blockquote>
+<pre><code class="language-bash">cd ~/Desktop
+mkdir HelloVapor
+cd HelloVapor
+swift package init --type executable</code></pre>
+<p>Your folder should look like this:</p>
+<pre><code>├── Package.swift
+├── Sources
+│   └── main.swift
+└── Tests</code></pre>
+<h2 id="edit">Edit <code>Package.swift</code></h2>
+<p>Open your <code>Package.swift</code> file:</p>
+<pre><code class="language-bash">open Package.swift</code></pre>
+<p>And add Vapor as a dependency. Here's how your file will look.</p>
+<h4 id="packageswift">Package.swift</h4>
+<pre><code class="language-swift">import PackageDescription
+
+let package = Package(
+    name: "HelloVapor",
+    dependencies: [
+        .Package(url: "https://github.com/qutheory/vapor.git", majorVersion: 0, minor: 15)
+    ]
+)</code></pre>
+<blockquote>
+<p>We try to keep this document up to date, however, you can view latest releases <a href="https://github.com/qutheory/vapor/releases">here</a></p>
+</blockquote>
+<h2 id="edit-1">Edit <code>main.swift</code></h2>
+<p>A simple hello world:</p>
+<pre><code>import Vapor
+
+let drop = Droplet()
+
+drop.get("/hello") { _ in
+  return "Hello Vapor"
+}
+
+try drop.serve()</code></pre>
+<h2 id="build-and-run">Build and Run</h2>
+<p>The first <code>build</code> command can take a while to fetch dependencies.</p>
+<pre><code>swift build
+.build/debug/HelloVapor</code></pre>
+<blockquote>
+<p>If different, replace <code>HelloVapor</code> above with the name of your executable.</p>
+</blockquote>
+<h2 id="view">View</h2>
+<p>Go to your favorite browser and visit <code>http://localhost:8000/hello</code></p>
         </main>
 
         <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>

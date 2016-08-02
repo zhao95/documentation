@@ -67,7 +67,7 @@
                                 Install Toolbox
                             </a>
                         </li>
-                                            <li class="active">
+                                            <li class="">
                             <a href="https://qutheory.github.io/documentation/getting-started/hello-world.html">
                                 Hello, World
                             </a>
@@ -107,7 +107,7 @@
                                 Views
                             </a>
                         </li>
-                                            <li class="">
+                                            <li class="active">
                             <a href="https://qutheory.github.io/documentation/guide/validation.html">
                                 Validation
                             </a>
@@ -129,58 +129,64 @@
 
         <main>
             <a href="https://github.com/qutheory/documentation/blob/master/CONTRIBUTING.md" class="edit">✎ Edit on GitHub</a>
-            <h1 id="hello-world">Hello, World</h1>
-<p>This section assumes you have installed Swift 3 and the Vapor Toolbox and have verified they are working.</p>
-<h2 id="new-project">New Project</h2>
-<p>Let's start by creating a new project called Hello, World</p>
-<pre><code class="language-sh">vapor new Hello</code></pre>
-<p>Vapor's folder structure will probably look familiar to you if you have worked with other web frameworks.</p>
-<pre><code>.
-├── App
-│   └── Controllers
-│   └── Middleware
-│   └── Models
-│   └── main.swift
-├── Public
-├── Resources
-│   └── Views
-└── Package.swift</code></pre>
-<p>For our Hello, World project, we will be focusing on the <code>main.swift</code> file.</p>
-<pre><code>.
-└── App
-    └── main.swift</code></pre>
-<p>Note: The <code>vapor new</code> command creates a new project with examples and comments about how to use the framework. You can delete these if you want.</p>
-<h2 id="droplet">Droplet</h2>
-<p>Look for the following line in the <code>main.swift</code> file.</p>
-<pre><code class="language-swift">let drop = Droplet()</code></pre>
-<p>This is where the one and only <code>Droplet</code>for this example will be created. The <code>Droplet</code> class has a plethora of useful functions on it, and is used extensively.</p>
-<h2 id="routing">Routing</h2>
-<p>Right after the creation of <code>drop</code>, add the following code snippet.</p>
-<pre><code class="language-swift">drop.get("hello") { request in
-    return "Hello, world!"
+            <h1 id="validation">Validation</h1>
+<p>Vapor provides a few different ways to validate data coming into your application. Let's start by looking at the most common.</p>
+<h2 id="common-usage">Common Usage</h2>
+<p>Several useful convenience validators are included by default. You can use these to validate data coming into your application, or combine them and create your own.</p>
+<p>Let's look at the most common way to validate data.</p>
+<pre><code class="language-swift">class Employee {
+    var email: Valid&lt;Email&gt;
+    var name: Valid&lt;Name&gt;
+
+    init(request: Request) throws {
+        name = try request.data["name"].validated()
+        email = try request.data["email"].validated()
+    }
 }</code></pre>
-<p>This creates a new route on the <code>Droplet</code> that will match all <code>GET</code> requests to <code>/hello</code>.</p>
-<p>All route closures are passed an instance of <a href="../guide/request.html">Request</a> that contains information such as the URI requested and data sent.</p>
-<p>This route simply returns a string, but anything that is <a href="../guide/routing.html">ResponseRepresentable</a> can be returned. Learn more in the <a href="{../guide/routing.html">Routing</a> section of the guide.</p>
-<h2 id="serving">Serving</h2>
-<p>At the bottom of the main file, make sure to serve your <code>Droplet</code>.</p>
-<pre><code class="language-swift">drop.serve()</code></pre>
-<p>Save the file, and switch back to the terminal.</p>
-<h2 id="compiling">Compiling</h2>
-<p>A big part of what makes Vapor so great is Swift's state of the art compiler. Let's fire it up. Make sure you are in the root directory of the project and run the following command.</p>
-<pre><code class="language-swift">vapor build</code></pre>
-<p>Note: <code>vapor build</code> runs <code>swift build</code> in the background.</p>
-<p>The Swift Package Manager will first start by downloading the appropriate dependencies from git. It will then compile and link these dependencies together.</p>
-<p>When the process has completed, you will see <code>Building Project [Done]</code></p>
-<p>Note: If you see a message like <code>unable to execute command: Killed</code>, you need to increase your swap space. This can happen if you are running on a machine with limited memory.</p>
-<h2 id="run">Run</h2>
-<p>Boot up the server by running the following command.</p>
-<pre><code class="language-swift">vapor run serve</code></pre>
-<p>You should see a message <code>Server starting...</code>. You can now visit <code>http://localhost:8080/hello</code> in your browser.</p>
-<p>Note: Certain port numbers require super user access to bind. Simply run <code>sudo vapor run</code> to allow access. If you decide to run on a port besides <code>80</code>, make sure to direct your browser accordingly.</p>
-<h2 id="hello-world-1">Hello, World</h2>
-<p>You should see the following output in your browser window.</p>
-<pre><code>Hello, world!</code></pre>
+<p>Here we have a typical Employee model with an <code>email</code> and <code>name</code> property. By declaring both of these properties as <code>Valid&lt;&gt;</code>, you are ensuring that these properties can only ever contain valid data. The Swift type checking system will prevent anything that does not pass validation from being stored.</p>
+<p>To store something in a <code>Valid&lt;&gt;</code> property, you must use the <code>.validated()</code> method. This is available for any data returned by <code>request.data</code>.</p>
+<p><code>Email</code> is a real <code>validator</code> included with Vapor, but <code>Name</code> is not. Let's take a look at how you can create a Validator.</p>
+<pre><code class="language-swift">Valid&lt;OnlyAlphanumeric&gt;
+Valid&lt;Email&gt;
+Valid&lt;Unique&lt;T&gt;&gt;
+Valid&lt;Matches&lt;T&gt;&gt;
+Valid&lt;In&lt;T&gt;&gt;
+Valid&lt;Contains&lt;T&gt;&gt;
+Valid&lt;Count&lt;T&gt;&gt;</code></pre>
+<h2 id="validators-vs-validationsuites">Validators vs. ValidationSuites</h2>
+<p>Validators, like <code>Count</code> or <code>Contains</code> can have multiple configurations. For example:</p>
+<pre><code class="language-swift">let name: Valid&lt;Count&lt;String&gt;&gt; = try "Vapor".validated(by: Count.max(5))</code></pre>
+<p>Here we are validating that the <code>String</code> is at most 5 characters long. The type of <code>Valid&lt;Count&gt;</code> tells us that the string has been validated to be a certain count, but it does not tell us exactly what that count was. The string could have been validated to be less than three characters or more than one million.</p>
+<p>Because of this, <code>Validators</code> themselves are not as type safe as some applications might desire. <code>ValidationSuites</code> fix this. They combine multiple <code>Validators</code> and/or <code>ValidationSuites</code> together to represent exactly what type of data should be considered valid</p>
+<h2 id="custom-validator">Custom Validator</h2>
+<p>Here is how to create a custom <code>ValidationSuite</code>.</p>
+<pre><code class="language-swift">class Name: ValidationSuite {
+    static func validate(input value: String) throws {
+        let evaluation = OnlyAlphanumeric.self
+            &amp;&amp; Count.min(5)
+            &amp;&amp; Count.max(20)
+
+        try evaluation.validate(input: value)
+    }
+}</code></pre>
+<p>You only have to implement one method. In this method, use any other validators or logic to create your custom validator. Here we are defining a Name as only accepting alphanumeric Strings that are between 5 and 20 characters.</p>
+<p>Now we can be sure that anything of type Valid<Name> follows these rules.</p>
+<h2 id="combining-validators">Combining Validators</h2>
+<p>In the <code>Name</code> validator, you can see that <code>&amp;&amp;</code> is being used to combine validators. You can use <code>&amp;&amp;</code> as well as <code>||</code> to combine any validator as you would boolean values with an <code>if</code> statement.</p>
+<p>You can also use <code>!</code> to invert the validator.</p>
+<pre><code class="language-swift">let symbols = input.validated(by: !OnlyAlphanumeric.self)</code></pre>
+<h2 id="testing-validity">Testing Validity</h2>
+<p>While <code>validated() throw</code> is the most common method for validating, there are two others.</p>
+<pre><code class="language-swift">let passed = input.passes(Count.min(5))
+let valid = try input.tested(Count.min(5))</code></pre>
+<p><code>passes()</code> returns a boolean indicating whether or not the test passed. <code>tested()</code> will throw if the validation does not pass. But unlike <code>validated()</code> which returns a <code>Valid&lt;&gt;</code> type, <code>tested()</code> returns the original type of the item it was called on.</p>
+<h2 id="validation-failures">Validation Failures</h2>
+<p>Vapor will automatically catch validation failures in the <code>ValidationMiddleware</code>. But you can catch them on your own, or customize responses for certain types of failures.</p>
+<pre><code class="language-swift">do {
+    //validation here
+} catch let error as ValidationErrorProtocol {
+    print(error.message)
+}</code></pre>
         </main>
 
         <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
