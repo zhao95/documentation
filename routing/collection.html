@@ -102,7 +102,7 @@
                                 Config
                             </a>
                         </li>
-                                            <li class="active">
+                                            <li class="">
                             <a href="https://vapor.github.io/documentation/guide/views.html">
                                 Views
                             </a>
@@ -132,7 +132,7 @@
                                 Group
                             </a>
                         </li>
-                                            <li class="">
+                                            <li class="active">
                             <a href="https://vapor.github.io/documentation/routing/collection.html">
                                 Collection
                             </a>
@@ -154,37 +154,48 @@
 
         <main>
             <a href="https://github.com/qutheory/documentation/blob/master/CONTRIBUTING.md" class="edit">✎ Edit on GitHub</a>
-            <h1 id="views">Views</h1>
-<p>Views return HTML data from your application. They can be created from pure HTML documents or passed through renderers such as Mustache or Stencil.</p>
-<h2 id="views-directory">Views Directory</h2>
-<p>Views are stored in <code>Resources/Views</code>. They are created by calling the <code>view</code> method on <code>Droplet</code>.</p>
-<h2 id="html">HTML</h2>
-<p>Returning HTML, or any other non-rendered document, is simple. Just use the path of the document relative to the views directory.</p>
-<pre><code class="language-swift">drop.get("html") { request in
-    return try drop.view("index.html")
-}</code></pre>
-<h2 id="templating">Templating</h2>
-<p>Templated documents like mustache or stencil templates can take a <code>Context</code>.</p>
-<pre><code class="language-swift">drop.get("template") { request in
-    return try drop.view("index.template", [
-        "message": "Hello, world!"
-    ])
-}</code></pre>
-<h2 id="public-resources">Public Resources</h2>
-<p>Any resources that your views need, such as images, styles, and scripts, should be placed in the <code>Public</code> folder at the root of your application.</p>
-<h2 id="view-renderer">View Renderer</h2>
-<p>Any class that conforms to <code>ViewRenderer</code> can be set to render views with a given context.</p>
-<pre><code class="language-swift">class MustacheRenderer: RenderDriver {
-    ...
-}
+            <h1 id="route-collections">Route Collections</h1>
+<p>Route collections allow multiple routes and route groups to be organized in different files or modules.</p>
+<h2 id="example">Example</h2>
+<p>Here is an example of a route collection for the <code>v1</code> portion of an API.</p>
+<pre><code class="language-swift">import Vapor
+import HTTP
 
-View.renderers[".mustache"] = MustacheRenderer()</code></pre>
-<h2 id="available-renderers">Available Renderers</h2>
-<p>These renderers can be added to your application through Providers.</p>
-<ul>
-<li><a href="https://github.com/qutheory/vapor-mustache">Mustache</a></li>
-<li><a href="https://github.com/qutheory/vapor-stencil">Stencil</a></li>
-</ul>
+class V1Collection: RouteCollection {
+    typealias Wrapped = HTTP.Responder
+    func build&lt;B: RouteBuilder where B.Value == Wrapped&gt;(_ builder: B) {
+        let v1 = builder.grouped("v1")
+        let users = v1.grouped("users")
+        let articles = v1.grouped("articles")
+
+        users.get { request in
+            return "Requested all users."
+        }
+
+        articles.get(Article.self) { request, article in
+            return "Requested \(article.name)"
+        }
+    }
+}</code></pre>
+<p>This class could be place in any file, and we could add it to our droplet or even another route group.</p>
+<pre><code class="language-swift">let v1 = V1Collection()
+drop.collection(v1)</code></pre>
+<p>The <code>Droplet</code> will then be passed to the <code>build(_:)</code> method of your route collection and have the various routes added to it.</p>
+<h3 id="breakdown">Breakdown</h3>
+<p>For those that are curious, let's break down the route collection line by line to better understand what is going on.</p>
+<pre><code class="language-swift">typealias Wrapped = HTTP.Responder</code></pre>
+<p>This limits our route collection to adding HTTP responders. While the underlying router is capable of routing any type, Vapor routes HTTP responders exclusively. If we want to use this route collection with Vapor, it's wrapped type needs to match.</p>
+<pre><code class="language-swift">func build&lt;B: RouteBuilder where B.Value == Wrapped&gt;(_ builder: B) {</code></pre>
+<p>This method accepts a route builder and also verifies that the route builder accepts <code>Wrapped</code> or, as defined in the last line, <code>HTTP.Responder</code>s. Vapor's <code>Droplet</code> and any route <a href="group.html">group</a> created with Vapor are <code>RouteBuilder</code>s that accept HTTP responders.</p>
+<pre><code class="language-swift">let v1 = builder.grouped("v1")</code></pre>
+<p>From there you can create routes with the <code>builder</code> as usual. The <code>builder: B</code> will work exactly like a <code>Droplet</code> or route <a href="group.html">group</a>. Any methods that work there will work on this builder.</p>
+<h2 id="empty-initializable">Empty Initializable</h2>
+<p>You can even add <code>EmptyInitializable</code> to your route collection if it has an empty init method. This will allow you to add the route collection via its type name.</p>
+<pre><code class="language-swift">class V1Collection: RouteCollection, EmptyInitializable {
+    init() { }
+    ...</code></pre>
+<p>Now we can add the collection without initializing it.</p>
+<pre><code class="language-swift">drop.collection(V1Collection.self)</code></pre>
         </main>
 
         <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>

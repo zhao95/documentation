@@ -8,14 +8,14 @@
 
         <link rel="stylesheet"  href="https://fonts.googleapis.com/css?family=Source+Code+Pro">
         <link rel="stylesheet"  href="https://fonts.googleapis.com/css?family=Quicksand:400,700,300">
-        <link rel="stylesheet" href="https://qutheory.github.io/documentation/styles/qutheory-code.css">
-        <link rel="stylesheet" href="https://qutheory.github.io/documentation/styles/main.css">
+        <link rel="stylesheet" href="https://vapor.github.io/documentation/styles/qutheory-code.css">
+        <link rel="stylesheet" href="https://vapor.github.io/documentation/styles/main.css">
     </head>
     <body>
 
         <header>
-            <a class="logo" href="https://qutheory.github.io/documentation/">
-                <img src="https://qutheory.github.io/documentation/images/droplet.svg" alt="Vapor">
+            <a class="logo" href="https://vapor.github.io/documentation/">
+                <img src="https://vapor.github.io/documentation/images/droplet.svg" alt="Vapor">
                 <h1>Vapor <em>Docs</em></h1>
             </a>
             <ul>
@@ -43,37 +43,37 @@
                     <h3>Getting Started</h3>
                     <ul>
                                             <li class="">
-                            <a href="https://qutheory.github.io/documentation/getting-started/install-swift-3-macos.html">
+                            <a href="https://vapor.github.io/documentation/getting-started/install-swift-3-macos.html">
                                 Install Swift 3: macOS
                             </a>
                         </li>
                                             <li class="">
-                            <a href="https://qutheory.github.io/documentation/getting-started/install-swift-3-ubuntu.html">
+                            <a href="https://vapor.github.io/documentation/getting-started/install-swift-3-ubuntu.html">
                                 Install Swift 3: Ubuntu
                             </a>
                         </li>
                                             <li class="">
-                            <a href="https://qutheory.github.io/documentation/getting-started/install-swift-3.html">
+                            <a href="https://vapor.github.io/documentation/getting-started/install-swift-3.html">
                                 Install Swift 3
                             </a>
                         </li>
                                             <li class="">
-                            <a href="https://qutheory.github.io/documentation/getting-started/quickstart.html">
+                            <a href="https://vapor.github.io/documentation/getting-started/quickstart.html">
                                 Manual QuickStart
                             </a>
                         </li>
                                             <li class="">
-                            <a href="https://qutheory.github.io/documentation/getting-started/install-toolbox.html">
+                            <a href="https://vapor.github.io/documentation/getting-started/install-toolbox.html">
                                 Install Toolbox
                             </a>
                         </li>
                                             <li class="">
-                            <a href="https://qutheory.github.io/documentation/getting-started/hello-world.html">
+                            <a href="https://vapor.github.io/documentation/getting-started/hello-world.html">
                                 Hello, World
                             </a>
                         </li>
                                             <li class="">
-                            <a href="https://qutheory.github.io/documentation/getting-started/xcode.html">
+                            <a href="https://vapor.github.io/documentation/getting-started/xcode.html">
                                 Xcode
                             </a>
                         </li>
@@ -83,33 +83,58 @@
                     <h3>Guide</h3>
                     <ul>
                                             <li class="">
-                            <a href="https://qutheory.github.io/documentation/guide/droplet.html">
+                            <a href="https://vapor.github.io/documentation/guide/droplet.html">
                                 Droplet
                             </a>
                         </li>
                                             <li class="">
-                            <a href="https://qutheory.github.io/documentation/guide/folder-structure.html">
+                            <a href="https://vapor.github.io/documentation/guide/folder-structure.html">
                                 Folder Structure
                             </a>
                         </li>
-                                            <li class="active">
-                            <a href="https://qutheory.github.io/documentation/guide/routing.html">
-                                Routing
+                                            <li class="">
+                            <a href="https://vapor.github.io/documentation/guide/json.html">
+                                JSON
                             </a>
                         </li>
                                             <li class="">
-                            <a href="https://qutheory.github.io/documentation/guide/config.html">
+                            <a href="https://vapor.github.io/documentation/guide/config.html">
                                 Config
                             </a>
                         </li>
                                             <li class="">
-                            <a href="https://qutheory.github.io/documentation/guide/views.html">
+                            <a href="https://vapor.github.io/documentation/guide/views.html">
                                 Views
                             </a>
                         </li>
                                             <li class="">
-                            <a href="https://qutheory.github.io/documentation/guide/validation.html">
+                            <a href="https://vapor.github.io/documentation/guide/validation.html">
                                 Validation
+                            </a>
+                        </li>
+                                        </ul>
+                </section>
+                            <section>
+                    <h3>Routing</h3>
+                    <ul>
+                                            <li class="">
+                            <a href="https://vapor.github.io/documentation/routing/basic.html">
+                                Basic
+                            </a>
+                        </li>
+                                            <li class="">
+                            <a href="https://vapor.github.io/documentation/routing/parameters.html">
+                                Parameters
+                            </a>
+                        </li>
+                                            <li class="active">
+                            <a href="https://vapor.github.io/documentation/routing/group.html">
+                                Group
+                            </a>
+                        </li>
+                                            <li class="">
+                            <a href="https://vapor.github.io/documentation/routing/collection.html">
+                                Collection
                             </a>
                         </li>
                                         </ul>
@@ -118,7 +143,7 @@
                     <h3>HTTP</h3>
                     <ul>
                                             <li class="">
-                            <a href="https://qutheory.github.io/documentation/http/response.html">
+                            <a href="https://vapor.github.io/documentation/http/response.html">
                                 Response
                             </a>
                         </li>
@@ -129,60 +154,9 @@
 
         <main>
             <a href="https://github.com/qutheory/documentation/blob/master/CONTRIBUTING.md" class="edit">✎ Edit on GitHub</a>
-            <h1 id="routing">Routing</h1>
-<p>Routes in Vapor can be defined in any file that has access to your instance of <code>Droplet</code>. This is usually in the <code>main.swift</code> file.</p>
-<h2 id="basic">Basic</h2>
-<p>The most basic route includes a method, path, and closure.</p>
-<pre><code class="language-swift">drop.get("welcome") { request in 
-    return "Hello"
-}</code></pre>
-<p>The standard HTTP methods are available including <code>get</code>, <code>post</code>, <code>put</code>, <code>patch</code>, <code>delete</code>, and <code>options</code>.</p>
-<p>You can also use <code>any</code> to match all methods.</p>
-<h2 id="request">Request</h2>
-<p>The first parameter passed into your route closure is an instance of <a href="request.html">Request</a>. This contains the method, URI, body, and more.</p>
-<pre><code class="language-swift">let method = request.method</code></pre>
-<p>When you add a parameter type, like <code>String.self</code>, the closure will be required to contain another input variable. This variable will be the same type. In this case, <code>String</code>.</p>
-<h2 id="json">JSON</h2>
-<p>To respond with JSON, simply wrap your data structure with <code>JSON(node: )</code></p>
-<pre><code class="language-swift">drop.get("version") { request in
-    return try JSON(node: ["version": "1.0"])
-}</code></pre>
-<h2 id="response-representable">Response Representable</h2>
-<p>All routing closures can return a <a href="response.html">ResponseRepresentable</a> data structure. By default, Strings and JSON conform to this protocol, but you can add your own.</p>
-<pre><code class="language-swift">public protocol ResponseRepresentable {
-    func makeResponse() throws -&gt; Response
-}</code></pre>
-<h2 id="parameters">Parameters</h2>
-<p>Parameters are described by passing the type of data you would like to receive.</p>
-<pre><code class="language-swift">drop.get("hello", String.self) { request, name in 
-    return "Hello \(name)"
-}</code></pre>
-<h2 id="string-initializable">String Initializable</h2>
-<p>Any type that conforms to <code>StringInitializable</code> can be used as a parameter. By default, <code>String</code> and <code>Int</code> conform to this protocol, but you can add your own.</p>
-<pre><code class="language-swift">struct User: StringInitializable {
-    ...
-}
-
-app.get("users", User.self) { request, user in 
-    return "Hello \(user.name)"
-}</code></pre>
-<p>Using Swift extensions, you can extend your existing types to support this behavior.</p>
-<pre><code class="language-swift">extension User: StringInitializable {
-    init?(from string: String) throws {
-        guard let int = Int(string) else {
-            return nil //Will Abort.InvalidRequest
-        }
-
-        guard let user = User.find(int) else {
-            throw UserError.NotFound
-        }
-
-        self = user
-    }
-}</code></pre>
-<p>You can throw your own errors or return <code>nil</code> to throw the default error.</p>
-<h2 id="groups">Groups</h2>
-<p>Prefix a group of routes with a common string, host, or middleware using <code>group</code> and <code>grouped</code>.</p>
+            <h1 id="route-groups">Route Groups</h1>
+<p>Grouping routes together makes it easy to add common prefixes, middleware, or hosts to multiple routes.</p>
+<p>Route groups have two different forms: Group and Grouped.</p>
 <h3 id="group">Group</h3>
 <p>Group (without the &quot;ed&quot; at the end) takes a closure that is passed a <code>GroupBuilder</code>.</p>
 <pre><code class="language-swift">drop.group("v1") { v1 in
@@ -215,15 +189,10 @@ v1.get("users") { request in
 <pre><code class="language-swift">drop.grouped(host: "qutheory.io").grouped(AuthMiddleware()).group("v1") { authedSecureV1 in
     // add routes here
 }</code></pre>
-<h2 id="custom-routing">Custom Routing</h2>
-<p>Vapor still supports traditional routing for custom use-cases or long URLs.</p>
-<pre><code class="language-swift">drop.get("users/:user_id") { request in
-    request.parameters["user_id"] // String?
-}</code></pre>
         </main>
 
         <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
-        <script src="https://qutheory.github.io/documentation/scripts/highlight.pack.js"></script>
+        <script src="https://vapor.github.io/documentation/scripts/highlight.pack.js"></script>
 
         <script>
             $(function() {

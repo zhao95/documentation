@@ -92,7 +92,7 @@
                                 Folder Structure
                             </a>
                         </li>
-                                            <li class="">
+                                            <li class="active">
                             <a href="https://vapor.github.io/documentation/guide/json.html">
                                 JSON
                             </a>
@@ -102,7 +102,7 @@
                                 Config
                             </a>
                         </li>
-                                            <li class="active">
+                                            <li class="">
                             <a href="https://vapor.github.io/documentation/guide/views.html">
                                 Views
                             </a>
@@ -154,37 +154,37 @@
 
         <main>
             <a href="https://github.com/qutheory/documentation/blob/master/CONTRIBUTING.md" class="edit">✎ Edit on GitHub</a>
-            <h1 id="views">Views</h1>
-<p>Views return HTML data from your application. They can be created from pure HTML documents or passed through renderers such as Mustache or Stencil.</p>
-<h2 id="views-directory">Views Directory</h2>
-<p>Views are stored in <code>Resources/Views</code>. They are created by calling the <code>view</code> method on <code>Droplet</code>.</p>
-<h2 id="html">HTML</h2>
-<p>Returning HTML, or any other non-rendered document, is simple. Just use the path of the document relative to the views directory.</p>
-<pre><code class="language-swift">drop.get("html") { request in
-    return try drop.view("index.html")
+            <h1 id="json">JSON</h1>
+<p>JSON is an integral part of Vapor. It powers Vapor's <a href="config.html">Config</a> and is incredibly easy to use in both requests and responses.</p>
+<h2 id="request">Request</h2>
+<p>JSON is automatically available in <code>request.data</code> alongside form-urlencoded data and query data. This allows you to focus on making a great API, not worrying about what content types data will be sent in.</p>
+<pre><code class="language-swift">drop.any("hello") { request in
+    guard let name = request.data["name"].string else {
+        throw Abort.badRequest
+    }
+
+    return "Hello, \(name)!"
 }</code></pre>
-<h2 id="templating">Templating</h2>
-<p>Templated documents like mustache or stencil templates can take a <code>Context</code>.</p>
-<pre><code class="language-swift">drop.get("template") { request in
-    return try drop.view("index.template", [
-        "message": "Hello, world!"
+<p>This will return a greeting for any HTTP method or content type that the <code>name</code> is sent as, including JSON.</p>
+<h3 id="json-only">JSON Only</h3>
+<p>To specifically target JSON, use the <code>request.json</code> property.</p>
+<pre><code class="language-swift">drop.post("json") { request in
+    guard let name = request.json["name"].string else {
+        throw Abort.badRequest
+    }
+
+    return "Hello, \(name)!"
+}</code></pre>
+<p>The above snippet will only work if the request is sent with JSON data.</p>
+<h2 id="response">Response</h2>
+<p>To respond with JSON, simply wrap your data structure with <code>JSON(node: )</code></p>
+<pre><code class="language-swift">drop.get("version") { request in
+    return try JSON(node: [
+        "version": "1.0"
     ])
 }</code></pre>
-<h2 id="public-resources">Public Resources</h2>
-<p>Any resources that your views need, such as images, styles, and scripts, should be placed in the <code>Public</code> folder at the root of your application.</p>
-<h2 id="view-renderer">View Renderer</h2>
-<p>Any class that conforms to <code>ViewRenderer</code> can be set to render views with a given context.</p>
-<pre><code class="language-swift">class MustacheRenderer: RenderDriver {
-    ...
-}
-
-View.renderers[".mustache"] = MustacheRenderer()</code></pre>
-<h2 id="available-renderers">Available Renderers</h2>
-<p>These renderers can be added to your application through Providers.</p>
-<ul>
-<li><a href="https://github.com/qutheory/vapor-mustache">Mustache</a></li>
-<li><a href="https://github.com/qutheory/vapor-stencil">Stencil</a></li>
-</ul>
+<h2 id="middleware">Middleware</h2>
+<p>The <code>JSONMiddleware</code> is included in the <code>Droplet</code>'s middleware by default. You can remove it if you don't want JSON to be parsed.</p>
         </main>
 
         <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
