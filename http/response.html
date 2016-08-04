@@ -148,8 +148,33 @@
                     <h3>HTTP</h3>
                     <ul>
                                             <li class="">
+                            <a href="https://vapor.github.io/documentation/http/request.html">
+                                Request
+                            </a>
+                        </li>
+                                            <li class="">
                             <a href="https://vapor.github.io/documentation/http/response.html">
                                 Response
+                            </a>
+                        </li>
+                                            <li class="">
+                            <a href="https://vapor.github.io/documentation/http/body.html">
+                                Body
+                            </a>
+                        </li>
+                                            <li class="">
+                            <a href="https://vapor.github.io/documentation/http/response-representable.html">
+                                ResponseRepresentable
+                            </a>
+                        </li>
+                                            <li class="">
+                            <a href="https://vapor.github.io/documentation/http/responder.html">
+                                Responder
+                            </a>
+                        </li>
+                                            <li class="">
+                            <a href="https://vapor.github.io/documentation/http/client.html">
+                                Client
                             </a>
                         </li>
                                         </ul>
@@ -159,8 +184,75 @@
 
         <main>
             <a href="https://github.com/qutheory/documentation/blob/master/CONTRIBUTING.md" class="edit">✎ Edit on GitHub</a>
-            <h1 id="response">Response</h1>
-<p>Sometimes a custom <code>Respons</code>e object needs to be created instead of using something that is <code>ResponseRepresentable</code>. For instance, if you need to manually assign cookies.</p>
+            <blockquote>
+<p>Module: <code>import HTTP</code></p>
+</blockquote>
+<h1 id="response">Response</h1>
+<p>When building endpoints, we'll often be returning responses for requests. If we're making outgoing requests, we'll be receiving them.</p>
+<pre><code class="language-swift">public let status: Status
+public var headers: [HeaderKey: String]
+public var body: Body
+public var data: Content</code></pre>
+<h4 id="status">Status</h4>
+<p>The http status associated with the event, for example <code>.ok</code> == 200 ok.</p>
+<h4 id="headers">Headers</h4>
+<p>These are the headers associated with the request. If you are preparing an outgoing response, this can be used to add your own keys.</p>
+<pre><code class="language-swift">let contentType = response.headers["Content-Type"]  </code></pre>
+<p>Or for outgoing response:</p>
+<pre><code class="language-swift">let response = response ...
+response.headers["Content-Type"] = "application/json"
+response.headers["Authorization"] = ... my auth token</code></pre>
+<h5 id="extending-headers">Extending Headers</h5>
+<p>We generally seek to improve code bases by removing stringly typed code where possible. We can add variables to the headers using generic extensions.</p>
+<pre><code class="language-swift">extension KeyAccessible where Key == HeaderKey, Value == String {
+    var customKey: String? {
+      get {
+        return self["Custom-Key"]
+      }
+      set {
+        self["Custom-Key"] = newValue
+      }
+    }
+}</code></pre>
+<p>With this pattern implemented, our string <code>"Custom-Key"</code> is contained in one section of our code. We can now access like this:</p>
+<pre><code class="language-swift">let customKey = response.headers.customKey
+
+// or
+
+let request = ...
+response.headers.customKey = "my custom value"</code></pre>
+<h4 id="body">Body</h4>
+<p>This is the body associated with the response and represents the general data payload. You can view more about body in the associated <a href="./body.html">docs</a></p>
+<p>For responses, the body is most commonly set at initialization. With two main types.</p>
+<h5 id="bodyrepresentable">BodyRepresentable</h5>
+<p>Things that can be converted to bytes, ie:</p>
+<pre><code class="language-swift">let response = Response(status: .ok, body: "some string")</code></pre>
+<p>In the above example, the <code>String</code> will be automatically converted to a body. Your own types can do this as well.</p>
+<h5 id="bytes-directly">Bytes Directly</h5>
+<p>If we already have our bytes array, we can pass it into the body like so:</p>
+<pre><code class="language-swift">let response = Response(status: .ok, body: .data(myArrayOfBytes))</code></pre>
+<h5 id="chunked">Chunked</h5>
+<p>To send an <code>HTTP.Response</code> in chunks, we can pass a closure that we'll use to send our response body in parts.</p>
+<pre><code class="language-swift">let response = Response(status: .ok) { chunker in
+  for name in ["joe", "pam", "cheryl"] {
+      sleep(1)
+      try chunker.send(name)
+  }
+
+  try chunker.close()
+}</code></pre>
+<blockquote>
+<p>Make sure to call <code>close()</code> before the chunker leaves scope.</p>
+</blockquote>
+<h2 id="content">Content</h2>
+<p>We can access content the same we do in a <a href="./request.html">request</a>. This most commonly applies to outgoing requests.</p>
+<pre><code class="language-swift">let pokemonResponse = try drop.client.get("http://pokeapi.co/api/v2/pokemon/")
+let names = pokemonResponse.data["results", "name"]?.array</code></pre>
+<h2 id="json">JSON</h2>
+<p>To access JSON directly on a given response, use the following:</p>
+<pre><code class="language-swift">let json = request.response["hello"]</code></pre>
+<h2 id="key-paths">Key Paths</h2>
+<p>For more on KeyPaths, visit <a href="./request.html#key-paths">here</a></p>
         </main>
 
         <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>

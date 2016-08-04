@@ -148,8 +148,33 @@
                     <h3>HTTP</h3>
                     <ul>
                                             <li class="">
+                            <a href="https://vapor.github.io/documentation/http/request.html">
+                                Request
+                            </a>
+                        </li>
+                                            <li class="">
                             <a href="https://vapor.github.io/documentation/http/response.html">
                                 Response
+                            </a>
+                        </li>
+                                            <li class="">
+                            <a href="https://vapor.github.io/documentation/http/body.html">
+                                Body
+                            </a>
+                        </li>
+                                            <li class="">
+                            <a href="https://vapor.github.io/documentation/http/response-representable.html">
+                                ResponseRepresentable
+                            </a>
+                        </li>
+                                            <li class="">
+                            <a href="https://vapor.github.io/documentation/http/responder.html">
+                                Responder
+                            </a>
+                        </li>
+                                            <li class="">
+                            <a href="https://vapor.github.io/documentation/http/client.html">
+                                Client
                             </a>
                         </li>
                                         </ul>
@@ -282,9 +307,7 @@ extension Pokemon: ResponseRepresentable {
     }
 }</code></pre>
 <p>Now your route closures are greatly simplified and you don't need to <code>import HTTP</code>.</p>
-<pre><code class="language-swift">import HTTP
-
-drop.get("pokemon", Pokemon.self) { request, pokemon in
+<pre><code class="language-swift">drop.get("pokemon", Pokemon.self) { request, pokemon in
     return pokemon
 }</code></pre>
 <p>Middleware is incredibly powerful. Combined with extensions, it allows you to add functionality that feels native to the framework.</p>

@@ -122,7 +122,7 @@
                             <section>
                     <h3>Routing</h3>
                     <ul>
-                                            <li class="active">
+                                            <li class="">
                             <a href="https://vapor.github.io/documentation/routing/basic.html">
                                 Basic
                             </a>
@@ -184,93 +184,75 @@
 
         <main>
             <a href="https://github.com/qutheory/documentation/blob/master/CONTRIBUTING.md" class="edit">✎ Edit on GitHub</a>
-            <h1 id="basic-routing">Basic Routing</h1>
-<p>Routing is one of the most critical parts of a web framework. The router decides which requests get which responses.</p>
-<p>Vapor has a plethora of functionality for routing including route builders, groups, and collections. In this section, we will look at the basic of routing.</p>
-<h2 id="register">Register</h2>
-<p>The most basic route includes a method, path, and closure.</p>
-<pre><code class="language-swift">drop.get("welcome") { request in 
-    return "Hello"
-}</code></pre>
-<p>The standard HTTP methods are available including <code>get</code>, <code>post</code>, <code>put</code>, <code>patch</code>, <code>delete</code>, and <code>options</code>.</p>
-<pre><code class="language-swift">drop.post("form") { request in 
-    return "Submitted with a POST request"
-}</code></pre>
-<p>You can also use <code>any</code> to match all methods.</p>
-<h2 id="nesting">Nesting</h2>
-<p>To nest paths (adding <code>/</code>s in the URL), simply add commas.</p>
-<pre><code class="language-swift">drop.get("foo", "bar", "baz") { request in
-    return "You requested /foo/bar/baz"
-}</code></pre>
-<p>You can also use <code>/</code>, but commas are often easier to type and work better with type safe route <a href="parameters.html">parameters</a>.</p>
-<h2 id="alternate">Alternate</h2>
-<p>An alternate syntax that accepts a <code>Method</code> as the first parameter is also available. </p>
-<pre><code class="language-swift">drop.add(.trace, "welcome") { request in
-    return "Hello"
-}</code></pre>
-<p>This may be useful if you want to register routes dynamically or use a less common method.</p>
-<h2 id="request">Request</h2>
-<p>Each route closure is given a single <a href="../http/request.html">Request</a>. This contains all of the data associated with the request that led to your route closure being called. </p>
-<h2 id="response-representable">Response Representable</h2>
-<p>A route closure can return in three ways:</p>
-<ul>
-<li><code>Response</code></li>
-<li><code>ResponseRepresentable</code></li>
-<li><code>throw</code></li>
-</ul>
-<h3 id="response">Response</h3>
-<p>A custom <a href="../http/response.html">Response</a> can be returned.</p>
-<pre><code class="language-swift">drop.get("vapor") { request in
-    return Response(redirect: "http://vapor.codes")
-}</code></pre>
-<p>This is useful for creating special responses like redirects. It is also useful for cases where you want to add cookies or other items to the response.</p>
-<h3 id="response-representable-1">Response Representable</h3>
-<p>As you have seen in the previous examples, <code>String</code>s can be returned in route closures. This is because they conform to <a href="../http/responserepresentable.html">ResponseRepresentable</a></p>
-<p>A lot of types in Vapor conform to this protocol by default:</p>
-<ul>
-<li>String</li>
-<li>Int</li>
-<li>JSON</li>
-<li>Model</li>
-</ul>
-<pre><code class="language-swift">drop.get("json") { request in
-    return try JSON(node: [
-        "number": 123,
-        "text": "unicorns",
-        "bool": false
-    ])
-}</code></pre>
-<blockquote>
-<p>If you are curious about what <code>node:</code> means, read more about <a href="../node/node.html">Node</a></p>
+            <blockquote>
+<p>Module: <code>import HTTP</code></p>
 </blockquote>
-<h3 id="throwing">Throwing</h3>
-<p>If you are unable to return a response, you may <code>throw</code> any object that conforms to <code>Error</code>. Vapor comes with a default error enum <code>Abort</code>.</p>
-<pre><code class="language-swift">drop.get("404") { request in
-    throw Abort.notFound
+<h1 id="client">Client</h1>
+<p>The client provided by <code>HTTP</code> is used to make outgoing requests to remote servers. Let's look at a simple outgoing request.</p>
+<h2 id="quickstart">QuickStart</h2>
+<p>Let's jump right in to make a simple HTTP Request. Here's a basic <code>GET</code> request using your Vapor <code>Droplet</code>.</p>
+<pre><code class="language-swift">let query = ...
+let spotifyResponse = try drop.client.get("https://api.spotify.com/v1/search?type=artist&amp;q=\(query)")
+print(spotifyR)</code></pre>
+<h3 id="clean-up">Clean Up</h3>
+<p>The url above can be a little tricky to read, so let's use the query parameter to clean it up a little bit:</p>
+<pre><code class="language-swift">try drop.client.get("https://api.spotify.com/v1/search", query: ["type": "artist", "q": query])</code></pre>
+<h3 id="continued">Continued</h3>
+<p>In addition to <code>GET</code> requests, Vapor's client provides support for most common HTTP functions. <code>GET</code>, <code>POST</code>, <code>PUT</code>, <code>PATCH</code>, <code>DELETE</code></p>
+<pre><code class="language-swift">let bytes = myJSON.makeBytes()
+try drop.client.post("http://some-endpoint/json", headers: ["Auth": "Token my-auth-token"], body: .data(jsonBytes))</code></pre>
+<h3 id="full-request">Full Request</h3>
+<p>To access additional functionality or custom methods, use the underlying <code>request</code> function directly.</p>
+<pre><code class="language-swift">public static func get(_ method: Method,
+                       _ uri: String,
+                       headers: [HeaderKey: String] = [:],
+                       query: [String: CustomStringConvertible] = [:],
+                       body: Body = []) throws -&gt; Response</code></pre>
+<p>For example:</p>
+<pre><code class="language-swift">try drop.client.request(.other(method: "CUSTOM"), "http://some-domain", headers: ["My": "Header"], query: ["key": "value"], body: [])</code></pre>
+<h2 id="advanced">Advanced</h2>
+<p>In addition to our Droplet, we can also use and interact with the <code>Client</code> manually. Here's how our default implementation in Vapor looks:</p>
+<pre><code class="language-swift">let response = try Client&lt;TCPClientStream&gt;.get("http://some-endpoint/mine")</code></pre>
+<p>The first thing we likely noticed is <code>TCPClientStream</code> being used as a Generic value. This will be the underlying connection that the <code>HTTP.Client</code> can use when performing the request. By conforming to the underlying <code>ClientStream</code>, an <code>HTTP.Client</code> can accept custom stream implementations seamlessly.</p>
+<h2 id="save-connection">Save Connection</h2>
+<p>Up to this point, we've been interacting with the Client via <code>class</code> or <code>static</code> level functions. This allows us to end the connection upon a completed request and is the recommended interaction for most use cases. For some advanced situations, we may want to reuse a connection. For these, we can initialize our client and perform multiple requests like this.</p>
+<pre><code class="language-swift">let pokemonClient = try drop?.client.make(scheme: "http", host: "pokeapi.co")
+for i in 0...1 {
+    let response = try pokemonClient?.get(path: "/api/v2/pokemon/", query: ["limit": 20, "offset": i])
+    print("response: \(response)")
 }</code></pre>
-<p>You can customize the message of these errors by using <code>Abort</code></p>
-<pre><code class="language-swift">drop.get("error") { request in
-    throw Abort.custom(status: .badRequest, message: "Sorry 😱")
+<h2 id="clientprotocol">ClientProtocol</h2>
+<p>Up to this point, we've focused on the built in <code>HTTP.Client</code>, but users can also include their own customized clients by conforming to <code>HTTP.ClientProtocol</code>. Let's look at the implementation:</p>
+<pre><code class="language-swift">public protocol Responder {
+    func respond(to request: Request) throws -&gt; Response
+}
+
+public protocol Program {
+    var host: String { get }
+    var port: Int { get }
+    var securityLayer: SecurityLayer { get }
+    // default implemented
+    init(host: String, port: Int, securityLayer: SecurityLayer) throws
+}
+
+public protocol ClientProtocol: Program, Responder {
+    var scheme: String { get }
+    var stream: Stream { get }
+    init(scheme: String, host: String, port: Int, securityLayer: SecurityLayer) throws
 }</code></pre>
-<p>These errors are caught by default in the <code>AbortMiddleware</code> where they are turned into a JSON response like the following.</p>
-<pre><code class="language-json">{
-    error: true,
-    message: "&lt;the message&gt;"
-}</code></pre>
-<p>If you want to override this behavior, remove the <code>AbortMiddleware</code> from the <code>Droplet</code>'s middleware and add your own.</p>
-<h2 id="fallback">Fallback</h2>
-<p>Fallback routes allow you to match multiple layers of nesting slashes.</p>
-<pre><code class="language-swift">app.get("anything", "*") { request in 
-    return "Matches anything after /anything"
-}</code></pre>
-<p>For example, the above route matches all of the following and more:</p>
-<ul>
-<li>/anything</li>
-<li>/anything/foo</li>
-<li>/anything/foo/bar</li>
-<li>/anything/foo/bar/baz</li>
-<li>...</li>
-</ul>
+<p>By conforming to these underlying functions, we immediately gain access to the public <code>ClientProtocol</code> apis we viewed above.</p>
+<h2 id="customize-droplet">Customize Droplet</h2>
+<p>If we've introduced a custom conformance to <code>HTTP.ClientProtocol</code>, we can pass this into our droplet without changing the underlying behavior in our application.</p>
+<p>For example:</p>
+<pre><code class="language-swift">let drop = Droplet(client: MyCustomClient.self)</code></pre>
+<p>Going forward, all of your calls to <code>drop.client</code> will use <code>MyCustomClient.self</code>:</p>
+<pre><code class="language-swift">drop.client.get(... // uses `MyCustomClient`</code></pre>
+<h3 id="provider">Provider</h3>
+<p>We can also use Providers to inherit behavior in our application. For example, to add Linux compatible TLS to our application's <code>Client</code>, we might use this:</p>
+<pre><code class="language-swift">import VaporTLS
+
+let drop = Droplet(initializedProviders: [VaporTLS.Provider(.client)])</code></pre>
+<p>In the same way as above, this will now apply to all <code>drop.client</code> calls within our application.</p>
         </main>
 
         <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>

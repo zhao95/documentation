@@ -122,7 +122,7 @@
                             <section>
                     <h3>Routing</h3>
                     <ul>
-                                            <li class="active">
+                                            <li class="">
                             <a href="https://vapor.github.io/documentation/routing/basic.html">
                                 Basic
                             </a>
@@ -184,93 +184,91 @@
 
         <main>
             <a href="https://github.com/qutheory/documentation/blob/master/CONTRIBUTING.md" class="edit">✎ Edit on GitHub</a>
-            <h1 id="basic-routing">Basic Routing</h1>
-<p>Routing is one of the most critical parts of a web framework. The router decides which requests get which responses.</p>
-<p>Vapor has a plethora of functionality for routing including route builders, groups, and collections. In this section, we will look at the basic of routing.</p>
-<h2 id="register">Register</h2>
-<p>The most basic route includes a method, path, and closure.</p>
-<pre><code class="language-swift">drop.get("welcome") { request in 
-    return "Hello"
+            <blockquote>
+<p>Module: <code>import HTTP</code></p>
+</blockquote>
+<h1 id="body">Body</h1>
+<p>The <code>HTTP.Body</code> represents the payload of an <code>HTTP.Message</code>, and is used to pass the underlying data. Some examples of this in practice would be <code>JSON</code>, <code>HTML</code> text, or the bytes of an image. Let's look at the implementation:</p>
+<pre><code class="language-swift">public enum Body {
+    case data(Bytes)
+    case chunked((ChunkStream) throws -&gt; Void)
 }</code></pre>
-<p>The standard HTTP methods are available including <code>get</code>, <code>post</code>, <code>put</code>, <code>patch</code>, <code>delete</code>, and <code>options</code>.</p>
-<pre><code class="language-swift">drop.post("form") { request in 
-    return "Submitted with a POST request"
+<h2 id="data-case">Data Case</h2>
+<p>The <code>data</code> case is by far the most common use for a <code>Body</code> in an <code>HTTP.Message</code>. It is simply an array of bytes. The serialization protocol or type associated with these bytes is usually defined by the <code>Content-Type</code> header. Let's look at some examples.</p>
+<h3 id="applicationjson">Application/JSON</h3>
+<p>If our <code>Content-Type</code> header contains <code>application/json</code>, then the underlying bytes represent serialized JSON.</p>
+<pre><code class="language-swift">if let contentType = req.headers["Content-Type"], contentType.contains("application/json"), let bytes = req.body.bytes {
+  let json = try JSON(bytes: bytes)
+  print("Got JSON: \(json)")
 }</code></pre>
-<p>You can also use <code>any</code> to match all methods.</p>
-<h2 id="nesting">Nesting</h2>
-<p>To nest paths (adding <code>/</code>s in the URL), simply add commas.</p>
-<pre><code class="language-swift">drop.get("foo", "bar", "baz") { request in
-    return "You requested /foo/bar/baz"
+<h3 id="imagepng">Image/PNG</h3>
+<p>If our <code>Content-Type</code> contains <code>image/png</code>, then the underlying bytes represent an encoded png.</p>
+<pre><code class="language-swift">if let contentType = req.headers["Content-Type"], contentType.contains("image/png"), let bytes = req.body.bytes {
+  try database.save(image: bytes)
 }</code></pre>
-<p>You can also use <code>/</code>, but commas are often easier to type and work better with type safe route <a href="parameters.html">parameters</a>.</p>
-<h2 id="alternate">Alternate</h2>
-<p>An alternate syntax that accepts a <code>Method</code> as the first parameter is also available. </p>
-<pre><code class="language-swift">drop.add(.trace, "welcome") { request in
-    return "Hello"
-}</code></pre>
-<p>This may be useful if you want to register routes dynamically or use a less common method.</p>
-<h2 id="request">Request</h2>
-<p>Each route closure is given a single <a href="../http/request.html">Request</a>. This contains all of the data associated with the request that led to your route closure being called. </p>
-<h2 id="response-representable">Response Representable</h2>
-<p>A route closure can return in three ways:</p>
-<ul>
-<li><code>Response</code></li>
-<li><code>ResponseRepresentable</code></li>
-<li><code>throw</code></li>
-</ul>
-<h3 id="response">Response</h3>
-<p>A custom <a href="../http/response.html">Response</a> can be returned.</p>
-<pre><code class="language-swift">drop.get("vapor") { request in
-    return Response(redirect: "http://vapor.codes")
-}</code></pre>
-<p>This is useful for creating special responses like redirects. It is also useful for cases where you want to add cookies or other items to the response.</p>
-<h3 id="response-representable-1">Response Representable</h3>
-<p>As you have seen in the previous examples, <code>String</code>s can be returned in route closures. This is because they conform to <a href="../http/responserepresentable.html">ResponseRepresentable</a></p>
-<p>A lot of types in Vapor conform to this protocol by default:</p>
-<ul>
-<li>String</li>
-<li>Int</li>
-<li>JSON</li>
-<li>Model</li>
-</ul>
-<pre><code class="language-swift">drop.get("json") { request in
-    return try JSON(node: [
-        "number": 123,
-        "text": "unicorns",
-        "bool": false
-    ])
+<h2 id="chunked-case">Chunked Case</h2>
+<p>The <code>chunked</code> case only applies to outgoing <code>HTTP.Message</code>s in Vapor. It is traditionally a responder's role to collect an entire chunked encoding before passing it on. We can use this to send a body asynchronously.</p>
+<pre><code class="language-swift">let body: Body = Body.chunked(sender)
+return Response(status: .ok, body: body)</code></pre>
+<p>We can implement this manually, or use Vapor's built in convenience initializer for chunked bodies:</p>
+<pre><code class="language-swift">return Response(status: .ok) { chunker in
+  for name in ["joe", "pam", "cheryl"] {
+      sleep(1)
+      try chunker.send(name)
+  }
+
+  try chunker.close()
 }</code></pre>
 <blockquote>
-<p>If you are curious about what <code>node:</code> means, read more about <a href="../node/node.html">Node</a></p>
+<p>Make sure to call <code>close()</code> before the chunker leaves scope.</p>
 </blockquote>
-<h3 id="throwing">Throwing</h3>
-<p>If you are unable to return a response, you may <code>throw</code> any object that conforms to <code>Error</code>. Vapor comes with a default error enum <code>Abort</code>.</p>
-<pre><code class="language-swift">drop.get("404") { request in
-    throw Abort.notFound
+<h2 id="bodyrepresentable">BodyRepresentable</h2>
+<p>In addition to the concrete <code>Body</code> type, as is common in Vapor, we also have wide support for <code>BodyRepresentable</code>. This means objects that we're commonly converting to <code>Body</code> type can be used interchangeably. For example:</p>
+<pre><code class="language-swift">return Response(body: "Hello, World!")</code></pre>
+<p>In the above example, string is converted to bytes and added to the body.</p>
+<blockquote>
+<p>In practice, it is better to use <code>return "Hello, World!"</code>. Vapor will automatically be able to set the <code>Content-Type</code> to appropriate values.</p>
+</blockquote>
+<p>Let's look at how it's implemented:</p>
+<pre><code class="language-swift">public protocol BodyRepresentable {
+    func makeBody() -&gt; Body
 }</code></pre>
-<p>You can customize the message of these errors by using <code>Abort</code></p>
-<pre><code class="language-swift">drop.get("error") { request in
-    throw Abort.custom(status: .badRequest, message: "Sorry 😱")
+<h3 id="custom">Custom</h3>
+<p>We can conform our own types to this as well where applicable. Let's pretend we have a custom data type, <code>.vpr</code>. Let's conform our <code>VPR</code> file type model:</p>
+<pre><code class="language-swift">extension VPRFile: HTTP.BodyRepresentable {
+  func makeBody() -&gt; Body {
+    // collect bytes
+    return .data(bytes)
+  }
 }</code></pre>
-<p>These errors are caught by default in the <code>AbortMiddleware</code> where they are turned into a JSON response like the following.</p>
-<pre><code class="language-json">{
-    error: true,
-    message: "&lt;the message&gt;"
+<blockquote>
+<p>You may have noticed above, that the protocol throws, but our implementation does not. This is compeletely valid in Swift and will allow you to not throw if you're ever calling the function manually.</p>
+</blockquote>
+<p>Now we're able to include our <code>VPR</code> file directly in our <code>Responses</code>.</p>
+<pre><code class="language-swift">drop.get("files", ":file-name") { request in
+  let filename = try request.parameters.extract("file-name") as String
+  let file = VPRFileManager.fetch(filename)
+  return Response(status: .ok, headers: ["Content-Type": "file/vpr"], body: file)
 }</code></pre>
-<p>If you want to override this behavior, remove the <code>AbortMiddleware</code> from the <code>Droplet</code>'s middleware and add your own.</p>
-<h2 id="fallback">Fallback</h2>
-<p>Fallback routes allow you to match multiple layers of nesting slashes.</p>
-<pre><code class="language-swift">app.get("anything", "*") { request in 
-    return "Matches anything after /anything"
+<p>In practice, if we're repeating this often, we'll probably conform <code>VPRFile</code> directly to <code>ResponseRepresentable</code></p>
+<pre><code class="language-swift">extension VPRFile: HTTP.ResponseRepresentable {
+  func makeResponse() -&gt; Response {
+    return Response(
+      status: .ok,
+      headers: ["Content-Type": "file/vpr"],
+      body: file
+    )
+  }
 }</code></pre>
-<p>For example, the above route matches all of the following and more:</p>
-<ul>
-<li>/anything</li>
-<li>/anything/foo</li>
-<li>/anything/foo/bar</li>
-<li>/anything/foo/bar/baz</li>
-<li>...</li>
-</ul>
+<p>Here's our above example now:</p>
+<pre><code class="language-swift">drop.get("files", ":file-name") { request in
+  let filename = try request.parameters.extract("file-name") as String
+  return VPRFileManager.fetch(filename)
+}</code></pre>
+<p>We could also use type-safe routing to make this even more concise:</p>
+<pre><code class="language-swift">drop.get("files", String.self) { request, filename in
+  return VPRFileManager.fetch(filename)
+}</code></pre>
         </main>
 
         <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>

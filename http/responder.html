@@ -122,7 +122,7 @@
                             <section>
                     <h3>Routing</h3>
                     <ul>
-                                            <li class="active">
+                                            <li class="">
                             <a href="https://vapor.github.io/documentation/routing/basic.html">
                                 Basic
                             </a>
@@ -184,93 +184,52 @@
 
         <main>
             <a href="https://github.com/qutheory/documentation/blob/master/CONTRIBUTING.md" class="edit">✎ Edit on GitHub</a>
-            <h1 id="basic-routing">Basic Routing</h1>
-<p>Routing is one of the most critical parts of a web framework. The router decides which requests get which responses.</p>
-<p>Vapor has a plethora of functionality for routing including route builders, groups, and collections. In this section, we will look at the basic of routing.</p>
-<h2 id="register">Register</h2>
-<p>The most basic route includes a method, path, and closure.</p>
-<pre><code class="language-swift">drop.get("welcome") { request in 
-    return "Hello"
-}</code></pre>
-<p>The standard HTTP methods are available including <code>get</code>, <code>post</code>, <code>put</code>, <code>patch</code>, <code>delete</code>, and <code>options</code>.</p>
-<pre><code class="language-swift">drop.post("form") { request in 
-    return "Submitted with a POST request"
-}</code></pre>
-<p>You can also use <code>any</code> to match all methods.</p>
-<h2 id="nesting">Nesting</h2>
-<p>To nest paths (adding <code>/</code>s in the URL), simply add commas.</p>
-<pre><code class="language-swift">drop.get("foo", "bar", "baz") { request in
-    return "You requested /foo/bar/baz"
-}</code></pre>
-<p>You can also use <code>/</code>, but commas are often easier to type and work better with type safe route <a href="parameters.html">parameters</a>.</p>
-<h2 id="alternate">Alternate</h2>
-<p>An alternate syntax that accepts a <code>Method</code> as the first parameter is also available. </p>
-<pre><code class="language-swift">drop.add(.trace, "welcome") { request in
-    return "Hello"
-}</code></pre>
-<p>This may be useful if you want to register routes dynamically or use a less common method.</p>
-<h2 id="request">Request</h2>
-<p>Each route closure is given a single <a href="../http/request.html">Request</a>. This contains all of the data associated with the request that led to your route closure being called. </p>
-<h2 id="response-representable">Response Representable</h2>
-<p>A route closure can return in three ways:</p>
-<ul>
-<li><code>Response</code></li>
-<li><code>ResponseRepresentable</code></li>
-<li><code>throw</code></li>
-</ul>
-<h3 id="response">Response</h3>
-<p>A custom <a href="../http/response.html">Response</a> can be returned.</p>
-<pre><code class="language-swift">drop.get("vapor") { request in
-    return Response(redirect: "http://vapor.codes")
-}</code></pre>
-<p>This is useful for creating special responses like redirects. It is also useful for cases where you want to add cookies or other items to the response.</p>
-<h3 id="response-representable-1">Response Representable</h3>
-<p>As you have seen in the previous examples, <code>String</code>s can be returned in route closures. This is because they conform to <a href="../http/responserepresentable.html">ResponseRepresentable</a></p>
-<p>A lot of types in Vapor conform to this protocol by default:</p>
-<ul>
-<li>String</li>
-<li>Int</li>
-<li>JSON</li>
-<li>Model</li>
-</ul>
-<pre><code class="language-swift">drop.get("json") { request in
-    return try JSON(node: [
-        "number": 123,
-        "text": "unicorns",
-        "bool": false
-    ])
+            <blockquote>
+<p>Module: <code>import HTTP</code></p>
+</blockquote>
+<h1 id="responder">Responder</h1>
+<p>The <code>Responder</code> is a simple protocol defining the behavior of objects that can accept a <code>Request</code> and return a <code>Response</code>. Most notably in Vapor, it is the core api endpoint that connects the <code>Droplet</code> to the <code>Server</code>. Let's look at the definition:</p>
+<pre><code class="language-swift">public protocol Responder {
+    func respond(to request: Request) throws -&gt; Response
 }</code></pre>
 <blockquote>
-<p>If you are curious about what <code>node:</code> means, read more about <a href="../node/node.html">Node</a></p>
+<p>The responder protocol is most notably related to Droplet and it's relationship with a server. Average users will not likely interact with it much.</p>
 </blockquote>
-<h3 id="throwing">Throwing</h3>
-<p>If you are unable to return a response, you may <code>throw</code> any object that conforms to <code>Error</code>. Vapor comes with a default error enum <code>Abort</code>.</p>
-<pre><code class="language-swift">drop.get("404") { request in
-    throw Abort.notFound
+<h2 id="simple">Simple</h2>
+<p>Of course, Vapor provides some conveniences for this, and in practice, we will often call:</p>
+<pre><code class="language-swift">try drop.serve()</code></pre>
+<h2 id="manual">Manual</h2>
+<p>As we just mentioned, the Vapor <code>Droplet</code> itself conforms to <code>Responder</code>, connecting it to the <code>Server</code>. This means if we wanted to serve our droplet manually, we could do:</p>
+<pre><code class="language-swift">let server = try Server&lt;TCPServerStream, Parser&lt;Request&gt;, Serializer&lt;Response&gt;&gt;(port: port)
+try server.start(responder: droplet)  { error in
+    print("Got error: \(error)")
 }</code></pre>
-<p>You can customize the message of these errors by using <code>Abort</code></p>
-<pre><code class="language-swift">drop.get("error") { request in
-    throw Abort.custom(status: .badRequest, message: "Sorry 😱")
+<h2 id="advanced">Advanced</h2>
+<p>We can conform our own objects to <code>Responder</code> and pass them to <code>Servers</code>. Let's look at an example:</p>
+<pre><code class="language-swift">final class Responder: HTTP.Responder {
+    func respond(to request: Request) throws -&gt; Response {
+        let body = "Hello World".makeBody()
+        return Response(body: body)
+    }
 }</code></pre>
-<p>These errors are caught by default in the <code>AbortMiddleware</code> where they are turned into a JSON response like the following.</p>
-<pre><code class="language-json">{
-    error: true,
-    message: "&lt;the message&gt;"
+<p>This only returns <code>"Hello World"</code> for every request, it's most commonly going to be linked with a router of some type.</p>
+<pre><code class="language-swift">final class Responder: HTTP.Responder {
+    let router: Router = ...
+
+    func respond(to request: Request) throws -&gt; Response {
+        return try router.route(request)
+    }
 }</code></pre>
-<p>If you want to override this behavior, remove the <code>AbortMiddleware</code> from the <code>Droplet</code>'s middleware and add your own.</p>
-<h2 id="fallback">Fallback</h2>
-<p>Fallback routes allow you to match multiple layers of nesting slashes.</p>
-<pre><code class="language-swift">app.get("anything", "*") { request in 
-    return "Matches anything after /anything"
+<p>We'll then pass this responder to a server and let it go.</p>
+<pre><code class="language-swift">let server = try Server&lt;TCPServerStream, Parser&lt;Request&gt;, Serializer&lt;Response&gt;&gt;(port: port)
+
+print("visit http://localhost:\(port)/")
+try server.start(responder: Responder()) { error in
+    print("Got error: \(error)")
 }</code></pre>
-<p>For example, the above route matches all of the following and more:</p>
-<ul>
-<li>/anything</li>
-<li>/anything/foo</li>
-<li>/anything/foo/bar</li>
-<li>/anything/foo/bar/baz</li>
-<li>...</li>
-</ul>
+<p>This can be used as a jumping off point for applications looking to implement features manually.</p>
+<h2 id="client">Client</h2>
+<p>The <code>HTTP.Client</code> is itself a <code>Responder</code> although, instead of handling the <code>Request</code> itsself, it passes it on to the underlying uri. </p>
         </main>
 
         <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
