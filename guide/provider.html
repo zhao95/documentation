@@ -117,7 +117,7 @@
                                 Validation
                             </a>
                         </li>
-                                            <li class="">
+                                            <li class="active">
                             <a href="https://vapor.github.io/documentation/guide/provider.html">
                                 Provider
                             </a>
@@ -182,7 +182,7 @@
                             <section>
                     <h3>HTTP</h3>
                     <ul>
-                                            <li class="active">
+                                            <li class="">
                             <a href="https://vapor.github.io/documentation/http/request.html">
                                 Request
                             </a>
@@ -219,119 +219,91 @@
 
         <main>
             <a href="https://github.com/vapor/documentation/blob/master/CONTRIBUTING.md" class="edit">✎ Edit on GitHub</a>
-            <blockquote>
-<p>Module: <code>import HTTP</code></p>
-</blockquote>
-<h1 id="request">Request</h1>
-<p>The most common part of the <code>HTTP</code> library we'll be interacting with is the <code>Request</code> type. Here's a look at some of the most commonly used attributes in this type.</p>
-<pre><code class="language-swift">public var method: Method
-public var uri: URI
-public var parameters: Node
-public var headers: [HeaderKey: String]
-public var body: Body
-public var data: Content</code></pre>
-<h3 id="method">Method</h3>
-<p>The HTTP <code>Method</code> associated with the <code>Request</code>, ie: <code>GET</code>, <code>POST</code>, <code>PUT</code>, <code>PATCH</code>, <code>DELETE</code>.</p>
-<h3 id="uri">URI</h3>
-<p>The associated <code>URI</code> of the request. We will use this to access attributes about the <code>uri</code> the request was sent to.</p>
-<p>For example, given the following uri: <code>http://vapor.codes/example?query=hi#fragments-too</code></p>
-<pre><code class="language-swift">let scheme = request.uri.scheme // http
-let host = request.uri.host // vapor.codes
-
-let path = request.uri.path // /example
-let query = request.uri.query // query=hi
-let fragment = request.uri.fragment // fragments-too</code></pre>
-<h3 id="parameters">Parameters</h3>
-<p>The url parameters associated with the request. For example, if we have a path registered as <code>hello/:name/age/:age</code>, we would be able to access those in our request, like so:</p>
-<pre><code class="language-swift">let name = request.parameters["name"] // String?
-let age = request.parameters["age"]?.int // Int?</code></pre>
-<p>Or, to automatically throw on <code>nil</code> or invalid variable, you can also <code>extract</code></p>
-<pre><code class="language-swift">let name = try request.parameters.extract("name") as String
-let age = try request.parameters.extract("age") as Int</code></pre>
-<p>These extract functions can cast to any <code>NodeInitializable</code> type, including your own custom types. Make sure to check out <a href="https://github.com/vapor/node">Node</a> for more info.</p>
+            <h1 id="provider">Provider</h1>
+<p>The <code>Provider</code> protocol creates a simple and predictable way for adding functionality and third party packages to your Vapor project.</p>
+<h2 id="adding-a-provider">Adding a Provider</h2>
+<p>Adding a provider to your application takes 2-3 steps.</p>
+<h3 id="add-package">Add Package</h3>
+<p>All of Vapor's providers end with the <code>-provider</code> syntax. You can see a list of <a href="https://github.com/vapor?utf8=✓&amp;query=-provider">available providers</a> by searching on our GitHub.</p>
+<p>To add the provider to your package, add it as a dependency in your <code>Package.swift</code> file.</p>
+<pre><code class="language-swift">let package = Package(
+    name: "MyApp",
+    dependencies: [
+        .Package(url: "https://github.com/vapor/vapor.git", majorVersion: 0, minor: 16),
+        .Package(url: "https://github.com/vapor/mysql-provider.git", majorVersion: 0, minor: 4)
+    ]
+)</code></pre>
 <blockquote>
-<p>Note: Vapor also provides type safe routing in the routing section of our docs.</p>
+<p>It's important to <code>vapor clean</code> or <code>vapor build --clean</code> after adding new packages.</p>
 </blockquote>
-<h3 id="headers">Headers</h3>
-<p>These are the headers associated with the request. If you are preparing an outgoing request, this can be used to add your own keys.</p>
-<pre><code class="language-swift">let contentType = request.headers["Content-Type"]  </code></pre>
-<p>Or for outgoing requests:</p>
-<pre><code class="language-swift">let request = Request ...
-request.headers["Content-Type"] = "application/json"
-request.headers["Authorization"] = ... my auth token</code></pre>
-<h4 id="extending-headers">Extending Headers</h4>
-<p>We generally seek to improve code bases by removing stringly typed code where possible. We can add variables to the headers using generic extensions.</p>
-<pre><code class="language-swift">extension KeyAccessible where Key == HeaderKey, Value == String {
-    var customKey: String? {
-      get {
-        return self["Custom-Key"]
-      }
-      set {
-        self["Custom-Key"] = newValue
-      }
+<h3 id="import">Import</h3>
+<p>Once the provider has been added, you can import it using <code>import VaporFoo</code> where <code>Foo</code> is the name of the provider.</p>
+<p>Here is what importing the MySQL provider looks like:</p>
+<pre><code class="language-swift">import Vapor
+import VaporMySQL
+
+let drop = Droplet(providers: [VaporMySQL.Provider.self])
+
+// ...
+
+drop.serve()</code></pre>
+<p>Every provider comes with a class named <code>Provider</code>. Append the <code>Type</code> of this class to your <code>providers</code> array in the <code>Droplet</code>'s init method.</p>
+<h3 id="config">Config</h3>
+<p>Some drivers may require a configuration file. For example, <code>VaporMySQL</code> requires a <code>Config/mysql.json</code> file like the following:</p>
+<pre><code class="language-json">{
+    "host": "localhost",
+    "user": "root",
+    "password": "",
+    "database": "vapor"
+}</code></pre>
+<p>You will receive an error during the <code>Droplet</code>'s initialization if a configuration file is required.</p>
+<h2 id="advanced">Advanced</h2>
+<p>You may choose to initialize the provider yourself. If you do, simply use the <code>initializedProvider</code> array instead.</p>
+<pre><code class="language-swift">import Vapor
+import VaporMySQL
+
+let mysql = VaporMySQL.Provider(host: "localhost", user: "root")
+
+let drop = Droplet(initializedProviders: [mysql])
+
+...
+
+drop.serve()</code></pre>
+<h2 id="create-a-provider">Create a Provider</h2>
+<p>Creating a provider is easy, you just need to create a package with a class <code>Provider</code> that conforms to <code>Vapor.Provider</code>.</p>
+<h3 id="example">Example</h3>
+<p>Here is what a provider for an example <code>Foo</code> package would look like. All the provider does is take a message, then print the message when the <code>Droplet</code> starts.</p>
+<pre><code class="language-swift">import Vapor
+
+public final class Provider: Vapor.Provider {
+    public let message: String
+    public let provided: Providable
+
+    public convenience init(config: Config) throws {
+        guard let message = config["foo", "message"].string else {
+            throw SomeError
+        }
+
+        try self.init(message: message)
+    }
+
+    public init(message: String) throws {
+        self.message = message
+    }
+
+    public func afterInit(_ drop: Droplet) {
+
+    }
+
+    public func beforeServe(_ drop: Droplet) {
+        drop.console.info(message)
     }
 }</code></pre>
-<p>With this pattern implemented, our string <code>"Custom-Key"</code> is contained in one section of our code. We can now access like this:</p>
-<pre><code class="language-swift">let customKey = request.headers.customKey
-
-// or
-
-let request = ...
-request.headers.customKey = "my custom value"</code></pre>
-<h3 id="body">Body</h3>
-<p>This is the body associated with the request and represents the general data payload. You can view more about body in the associated <a href="./body.html">docs</a></p>
-<p>For incoming requests, we'll often pull out the associated bytes like so:</p>
-<pre><code class="language-swift">let rawBytes = request.body.bytes</code></pre>
-<h2 id="content">Content</h2>
-<p>Generally when we're sending or receiving requests, we're using them as a way to transport content. For this, Vapor provides a convenient <code>data</code> variable associated with the request that prioritizes content in a consistent way.</p>
-<p>For example, say I receive a request to <code>http://vapor.codes?hello=world</code>.</p>
-<pre><code class="language-swift">let world = request.data["hello"].string</code></pre>
-<p>This same code will work if I receive a JSON request, for example:</p>
+<p>This provider wil require a <code>Config/foo.json</code> file that looks like:</p>
 <pre><code class="language-json">{
-  "hello": "world"
+    "message": "The message to output"
 }</code></pre>
-<p>Will still be accessible through data.</p>
-<pre><code class="language-swift">let world = request.data["hello"].string</code></pre>
-<p>This also applies to multi-part requests and can even be extended to new types such as XML or YAML through middleware.</p>
-<p>If you'd prefer to access given types more explicitly, that's totally fine. The <code>data</code> variable is purely opt-in convenience for those who want it.</p>
-<h2 id="json">JSON</h2>
-<p>To access JSON directly on a given request, use the following:</p>
-<pre><code class="language-swift">let json = request.json["hello"]</code></pre>
-<h2 id="query">Query</h2>
-<p>The same applies to query convenience:</p>
-<pre><code class="language-swift">let query = request.query["hello"]</code></pre>
-<h2 id="key-paths">Key Paths</h2>
-<p>Key paths work on most Vapor types that can have nested key value objects. Here's a couple examples of how to access given the following json:</p>
-<pre><code class="language-json">{
-  "metadata": "some metadata",
-  "artists" : {
-    "href": "http://someurl.com",
-    "items": [
-      {
-        "name": "Van Gogh",
-      },
-      {
-        "name": "Mozart"
-      }
-    ]
-  }
-}</code></pre>
-<p>We could access the data in the following ways:</p>
-<h3 id="metadata">Metadata</h3>
-<p>Access top level values</p>
-<pre><code class="language-swift">let type = request.data["metadata"].string // "some metadata"</code></pre>
-<h3 id="items">Items</h3>
-<p>Access nested values</p>
-<pre><code class="language-swift">let items = request.data["artists", "items"] // [["name": "Van Gogh"], ["name": "Mozart"]]</code></pre>
-<h3 id="mixing-arrays-and-objects">Mixing Arrays and Objects</h3>
-<p>Get first artists</p>
-<pre><code class="language-swift">let first = request.data["artists", "items", 0] // ["name": "Van Gogh"]</code></pre>
-<h3 id="array-item">Array Item</h3>
-<p>Get key from array item</p>
-<pre><code class="language-swift">let firstName = request.data["artists", "items", 0, "name"] // "Van Gogh"</code></pre>
-<h3 id="array-comprehension">Array Comprehension</h3>
-<p>We can also smartly map an array of keys, for example, to just get the names of all of the artists, we could use the following</p>
-<pre><code class="language-swift">let names = request.data["artists", "items", "name"] // ["Van Gogh", "Mozart"]</code></pre>
+<p>The provider can also be initialized manually with the <code>init(message: String)</code> init.</p>
         </main>
 
         <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>

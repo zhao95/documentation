@@ -167,7 +167,7 @@
                                 Model
                             </a>
                         </li>
-                                            <li class="">
+                                            <li class="active">
                             <a href="https://vapor.github.io/documentation/fluent/query.html">
                                 Query
                             </a>
@@ -182,7 +182,7 @@
                             <section>
                     <h3>HTTP</h3>
                     <ul>
-                                            <li class="active">
+                                            <li class="">
                             <a href="https://vapor.github.io/documentation/http/request.html">
                                 Request
                             </a>
@@ -219,119 +219,57 @@
 
         <main>
             <a href="https://github.com/vapor/documentation/blob/master/CONTRIBUTING.md" class="edit">✎ Edit on GitHub</a>
-            <blockquote>
-<p>Module: <code>import HTTP</code></p>
-</blockquote>
-<h1 id="request">Request</h1>
-<p>The most common part of the <code>HTTP</code> library we'll be interacting with is the <code>Request</code> type. Here's a look at some of the most commonly used attributes in this type.</p>
-<pre><code class="language-swift">public var method: Method
-public var uri: URI
-public var parameters: Node
-public var headers: [HeaderKey: String]
-public var body: Body
-public var data: Content</code></pre>
-<h3 id="method">Method</h3>
-<p>The HTTP <code>Method</code> associated with the <code>Request</code>, ie: <code>GET</code>, <code>POST</code>, <code>PUT</code>, <code>PATCH</code>, <code>DELETE</code>.</p>
-<h3 id="uri">URI</h3>
-<p>The associated <code>URI</code> of the request. We will use this to access attributes about the <code>uri</code> the request was sent to.</p>
-<p>For example, given the following uri: <code>http://vapor.codes/example?query=hi#fragments-too</code></p>
-<pre><code class="language-swift">let scheme = request.uri.scheme // http
-let host = request.uri.host // vapor.codes
-
-let path = request.uri.path // /example
-let query = request.uri.query // query=hi
-let fragment = request.uri.fragment // fragments-too</code></pre>
-<h3 id="parameters">Parameters</h3>
-<p>The url parameters associated with the request. For example, if we have a path registered as <code>hello/:name/age/:age</code>, we would be able to access those in our request, like so:</p>
-<pre><code class="language-swift">let name = request.parameters["name"] // String?
-let age = request.parameters["age"]?.int // Int?</code></pre>
-<p>Or, to automatically throw on <code>nil</code> or invalid variable, you can also <code>extract</code></p>
-<pre><code class="language-swift">let name = try request.parameters.extract("name") as String
-let age = try request.parameters.extract("age") as Int</code></pre>
-<p>These extract functions can cast to any <code>NodeInitializable</code> type, including your own custom types. Make sure to check out <a href="https://github.com/vapor/node">Node</a> for more info.</p>
-<blockquote>
-<p>Note: Vapor also provides type safe routing in the routing section of our docs.</p>
-</blockquote>
-<h3 id="headers">Headers</h3>
-<p>These are the headers associated with the request. If you are preparing an outgoing request, this can be used to add your own keys.</p>
-<pre><code class="language-swift">let contentType = request.headers["Content-Type"]  </code></pre>
-<p>Or for outgoing requests:</p>
-<pre><code class="language-swift">let request = Request ...
-request.headers["Content-Type"] = "application/json"
-request.headers["Authorization"] = ... my auth token</code></pre>
-<h4 id="extending-headers">Extending Headers</h4>
-<p>We generally seek to improve code bases by removing stringly typed code where possible. We can add variables to the headers using generic extensions.</p>
-<pre><code class="language-swift">extension KeyAccessible where Key == HeaderKey, Value == String {
-    var customKey: String? {
-      get {
-        return self["Custom-Key"]
-      }
-      set {
-        self["Custom-Key"] = newValue
-      }
-    }
+            <h1 id="query">Query</h1>
+<p>The <code>Query</code> class is what powers every interaction with Fluent. Whether you're fetching a model with <code>.find()</code> or saving to the database, there is a <code>Query</code> involved somewhere. </p>
+<h2 id="querying-models">Querying Models</h2>
+<p>Every type that conforms to <a href="model.html">Model</a> gets a static <code>.query()</code> method.</p>
+<pre><code class="language-swift">let query = try User.query()</code></pre>
+<p>This is how you can create a <code>Query&lt;User&gt;</code>. </p>
+<h3 id="no-database">No Database</h3>
+<p>The <code>.query()</code> method is marked with <code>try</code> because it can throw an error if the Model has not had its static database property set.</p>
+<pre><code class="language-swift">User.database = drop.database</code></pre>
+<p>This property is set automatically when you pass the Model as a preparation. </p>
+<h2 id="filter">Filter</h2>
+<p>The most common types of queries involve filtering data. </p>
+<pre><code class="language-swift">let smithsQuery = try User.query().filter("last_name", "Smith")</code></pre>
+<p>Here is the short hand for adding an <code>equals</code> filter to the query. As you can see, queries can be chained together.</p>
+<p>In additional to <code>equals</code>, there are many other types of <code>Filter.Comparison</code>.</p>
+<pre><code class="language-swift">let over21 = try User.query().filter("age", .greaterThanOrEquals, 21)</code></pre>
+<h3 id="scope">Scope</h3>
+<p>Filters can also be run on sets.</p>
+<pre><code class="language-swift">let coolPets = try Pet.query().filter("type", .in, ["Dog", "Ferret"])</code></pre>
+<p>Here only Pets of type Dog <em>or</em> Ferret are returned. The opposite works for <code>notIn</code>.</p>
+<h3 id="contains">Contains</h3>
+<p>Partially matching filters can also be applied.</p>
+<pre><code class="language-swift">let statesWithNew = try State.query().filter("name", contains: "New")</code></pre>
+<h2 id="retrieving">Retrieving</h2>
+<p>There are two methods for running a query.</p>
+<h3 id="all">All</h3>
+<p>All of the matching entities can be fetched. This returns an array of <code>[Model]</code>, in this case users.</p>
+<pre><code class="language-swift">let usersOver21 = try User.query().filter("age", .greaterThanOrEquals, 21).all()</code></pre>
+<h3 id="first">First</h3>
+<p>The first matching entity can be fetch. This returns an optional <code>Model?</code>, in this case a user.</p>
+<pre><code class="language-swift">let firstSmith = try User.query().filter("last_name", "Smith").first()</code></pre>
+<h2 id="union">Union</h2>
+<p>Other Models can be joined onto your query to assist in filtering. The results must still be either <code>[Model]</code> or <code>Model?</code> for whichever type created the query.</p>
+<pre><code class="language-swift">let usersWithCoolPets = try User.query()
+    .union(Pet.self)
+    .filter(Pet.self, "type", .in, ["Dog", "Ferret"])</code></pre>
+<p>Here the <code>User</code> collection is unioned to the <code>Pet</code> collection. Only <code>User</code>s who have a dog or a ferret will be returned.</p>
+<h3 id="keys">Keys</h3>
+<p>The <code>union</code> method assumes that the querying table has a foreign key identifier to the joining table.</p>
+<p>The above example with users and pets assumes the following schema.</p>
+<pre><code>users
+- id
+- pet_id
+pets
+- id</code></pre>
+<p>Custom foreign keys can be provided through overloads to <code>union</code>.</p>
+<h2 id="raw-queries">Raw Queries</h2>
+<p>Since Fluent is focused on interacting with models, each Query requires a model type. If you want to do raw database queries that aren't based on a model, you should use the underlying Fluent Driver to do so. </p>
+<pre><code class="language-swift">if let mysql = drop.database?.driver as? MySQLDriver {
+    let version = try mysql.raw("SELECT @@version")
 }</code></pre>
-<p>With this pattern implemented, our string <code>"Custom-Key"</code> is contained in one section of our code. We can now access like this:</p>
-<pre><code class="language-swift">let customKey = request.headers.customKey
-
-// or
-
-let request = ...
-request.headers.customKey = "my custom value"</code></pre>
-<h3 id="body">Body</h3>
-<p>This is the body associated with the request and represents the general data payload. You can view more about body in the associated <a href="./body.html">docs</a></p>
-<p>For incoming requests, we'll often pull out the associated bytes like so:</p>
-<pre><code class="language-swift">let rawBytes = request.body.bytes</code></pre>
-<h2 id="content">Content</h2>
-<p>Generally when we're sending or receiving requests, we're using them as a way to transport content. For this, Vapor provides a convenient <code>data</code> variable associated with the request that prioritizes content in a consistent way.</p>
-<p>For example, say I receive a request to <code>http://vapor.codes?hello=world</code>.</p>
-<pre><code class="language-swift">let world = request.data["hello"].string</code></pre>
-<p>This same code will work if I receive a JSON request, for example:</p>
-<pre><code class="language-json">{
-  "hello": "world"
-}</code></pre>
-<p>Will still be accessible through data.</p>
-<pre><code class="language-swift">let world = request.data["hello"].string</code></pre>
-<p>This also applies to multi-part requests and can even be extended to new types such as XML or YAML through middleware.</p>
-<p>If you'd prefer to access given types more explicitly, that's totally fine. The <code>data</code> variable is purely opt-in convenience for those who want it.</p>
-<h2 id="json">JSON</h2>
-<p>To access JSON directly on a given request, use the following:</p>
-<pre><code class="language-swift">let json = request.json["hello"]</code></pre>
-<h2 id="query">Query</h2>
-<p>The same applies to query convenience:</p>
-<pre><code class="language-swift">let query = request.query["hello"]</code></pre>
-<h2 id="key-paths">Key Paths</h2>
-<p>Key paths work on most Vapor types that can have nested key value objects. Here's a couple examples of how to access given the following json:</p>
-<pre><code class="language-json">{
-  "metadata": "some metadata",
-  "artists" : {
-    "href": "http://someurl.com",
-    "items": [
-      {
-        "name": "Van Gogh",
-      },
-      {
-        "name": "Mozart"
-      }
-    ]
-  }
-}</code></pre>
-<p>We could access the data in the following ways:</p>
-<h3 id="metadata">Metadata</h3>
-<p>Access top level values</p>
-<pre><code class="language-swift">let type = request.data["metadata"].string // "some metadata"</code></pre>
-<h3 id="items">Items</h3>
-<p>Access nested values</p>
-<pre><code class="language-swift">let items = request.data["artists", "items"] // [["name": "Van Gogh"], ["name": "Mozart"]]</code></pre>
-<h3 id="mixing-arrays-and-objects">Mixing Arrays and Objects</h3>
-<p>Get first artists</p>
-<pre><code class="language-swift">let first = request.data["artists", "items", 0] // ["name": "Van Gogh"]</code></pre>
-<h3 id="array-item">Array Item</h3>
-<p>Get key from array item</p>
-<pre><code class="language-swift">let firstName = request.data["artists", "items", 0, "name"] // "Van Gogh"</code></pre>
-<h3 id="array-comprehension">Array Comprehension</h3>
-<p>We can also smartly map an array of keys, for example, to just get the names of all of the artists, we could use the following</p>
-<pre><code class="language-swift">let names = request.data["artists", "items", "name"] // ["Van Gogh", "Mozart"]</code></pre>
         </main>
 
         <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>

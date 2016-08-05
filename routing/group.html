@@ -8,7 +8,7 @@
 
         <link rel="stylesheet"  href="https://fonts.googleapis.com/css?family=Source+Code+Pro">
         <link rel="stylesheet"  href="https://fonts.googleapis.com/css?family=Quicksand:400,700,300">
-        <link rel="stylesheet" href="https://vapor.github.io/documentation/styles/qutheory-code.css">
+        <link rel="stylesheet" href="https://vapor.github.io/documentation/styles/vapor-code.css">
         <link rel="stylesheet" href="https://vapor.github.io/documentation/styles/main.css">
     </head>
     <body>
@@ -20,19 +20,19 @@
             </a>
             <ul>
                 <li>
-                    <a href="http://qutheory.io">Home</a>
+                    <a href="http://vapor.codes">Home</a>
                 </li>
                 <li>
-                    <a href="http://example.qutheory.io">Example</a>
+                    <a href="http://example.vapor.codes">Example</a>
                 </li>
                 <li>
-                    <a href="https://github.com/qutheory/vapor">GitHub</a>
+                    <a href="https://github.com/vapor/vapor">GitHub</a>
                 </li>
                 <li>
-                    <a href="https://twitter.com/@qutheory">Twitter</a>
+                    <a href="https://twitter.com/@codevapor">Twitter</a>
                 </li>
                 <li>
-                    <a href="http://slack.qutheory.io">Slack</a>
+                    <a href="http://vapor.team">Slack</a>
                 </li>
             </ul>
         </header>
@@ -117,6 +117,16 @@
                                 Validation
                             </a>
                         </li>
+                                            <li class="">
+                            <a href="https://vapor.github.io/documentation/guide/provider.html">
+                                Provider
+                            </a>
+                        </li>
+                                            <li class="">
+                            <a href="https://vapor.github.io/documentation/guide/hash.html">
+                                Hash
+                            </a>
+                        </li>
                                         </ul>
                 </section>
                             <section>
@@ -140,6 +150,31 @@
                                             <li class="">
                             <a href="https://vapor.github.io/documentation/routing/collection.html">
                                 Collection
+                            </a>
+                        </li>
+                                        </ul>
+                </section>
+                            <section>
+                    <h3>Fluent</h3>
+                    <ul>
+                                            <li class="">
+                            <a href="https://vapor.github.io/documentation/fluent/driver.html">
+                                Driver
+                            </a>
+                        </li>
+                                            <li class="">
+                            <a href="https://vapor.github.io/documentation/fluent/model.html">
+                                Model
+                            </a>
+                        </li>
+                                            <li class="">
+                            <a href="https://vapor.github.io/documentation/fluent/query.html">
+                                Query
+                            </a>
+                        </li>
+                                            <li class="">
+                            <a href="https://vapor.github.io/documentation/fluent/relation.html">
+                                Relation
                             </a>
                         </li>
                                         </ul>
@@ -183,7 +218,7 @@
         </nav>
 
         <main>
-            <a href="https://github.com/qutheory/documentation/blob/master/CONTRIBUTING.md" class="edit">✎ Edit on GitHub</a>
+            <a href="https://github.com/vapor/documentation/blob/master/CONTRIBUTING.md" class="edit">✎ Edit on GitHub</a>
             <h1 id="route-groups">Route Groups</h1>
 <p>Grouping routes together makes it easy to add common prefixes, middleware, or hosts to multiple routes.</p>
 <p>Route groups have two different forms: Group and Grouped.</p>
@@ -209,14 +244,14 @@ v1.get("users") { request in
 }</code></pre>
 <h3 id="host">Host</h3>
 <p>You can limit the host for a group of routes.</p>
-<pre><code>drop.group(host: "qutheory.io") { qt
-    qt.get { request in
-        // only responds to requests to qutheory.io
+<pre><code>drop.group(host: "vapor.codes") { vapor
+    vapor.get { request in
+        // only responds to requests to vapor.codes
     }
 }</code></pre>
 <h3 id="chaining">Chaining</h3>
 <p>Groups can be chained together.</p>
-<pre><code class="language-swift">drop.grouped(host: "qutheory.io").grouped(AuthMiddleware()).group("v1") { authedSecureV1 in
+<pre><code class="language-swift">drop.grouped(host: "vapor.codes").grouped(AuthMiddleware()).group("v1") { authedSecureV1 in
     // add routes here
 }</code></pre>
         </main>

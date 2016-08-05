@@ -162,7 +162,7 @@
                                 Driver
                             </a>
                         </li>
-                                            <li class="">
+                                            <li class="active">
                             <a href="https://vapor.github.io/documentation/fluent/model.html">
                                 Model
                             </a>
@@ -182,7 +182,7 @@
                             <section>
                     <h3>HTTP</h3>
                     <ul>
-                                            <li class="active">
+                                            <li class="">
                             <a href="https://vapor.github.io/documentation/http/request.html">
                                 Request
                             </a>
@@ -219,119 +219,135 @@
 
         <main>
             <a href="https://github.com/vapor/documentation/blob/master/CONTRIBUTING.md" class="edit">✎ Edit on GitHub</a>
-            <blockquote>
-<p>Module: <code>import HTTP</code></p>
-</blockquote>
-<h1 id="request">Request</h1>
-<p>The most common part of the <code>HTTP</code> library we'll be interacting with is the <code>Request</code> type. Here's a look at some of the most commonly used attributes in this type.</p>
-<pre><code class="language-swift">public var method: Method
-public var uri: URI
-public var parameters: Node
-public var headers: [HeaderKey: String]
-public var body: Body
-public var data: Content</code></pre>
-<h3 id="method">Method</h3>
-<p>The HTTP <code>Method</code> associated with the <code>Request</code>, ie: <code>GET</code>, <code>POST</code>, <code>PUT</code>, <code>PATCH</code>, <code>DELETE</code>.</p>
-<h3 id="uri">URI</h3>
-<p>The associated <code>URI</code> of the request. We will use this to access attributes about the <code>uri</code> the request was sent to.</p>
-<p>For example, given the following uri: <code>http://vapor.codes/example?query=hi#fragments-too</code></p>
-<pre><code class="language-swift">let scheme = request.uri.scheme // http
-let host = request.uri.host // vapor.codes
-
-let path = request.uri.path // /example
-let query = request.uri.query // query=hi
-let fragment = request.uri.fragment // fragments-too</code></pre>
-<h3 id="parameters">Parameters</h3>
-<p>The url parameters associated with the request. For example, if we have a path registered as <code>hello/:name/age/:age</code>, we would be able to access those in our request, like so:</p>
-<pre><code class="language-swift">let name = request.parameters["name"] // String?
-let age = request.parameters["age"]?.int // Int?</code></pre>
-<p>Or, to automatically throw on <code>nil</code> or invalid variable, you can also <code>extract</code></p>
-<pre><code class="language-swift">let name = try request.parameters.extract("name") as String
-let age = try request.parameters.extract("age") as Int</code></pre>
-<p>These extract functions can cast to any <code>NodeInitializable</code> type, including your own custom types. Make sure to check out <a href="https://github.com/vapor/node">Node</a> for more info.</p>
+            <h1 id="model">Model</h1>
+<p><code>Model</code> is the base protocol for any of your application's models, especially those you want to persist. </p>
 <blockquote>
-<p>Note: Vapor also provides type safe routing in the routing section of our docs.</p>
+<p><code>Model</code> is only available in Vapor, the Fluent equivalent is <code>Entity</code></p>
 </blockquote>
-<h3 id="headers">Headers</h3>
-<p>These are the headers associated with the request. If you are preparing an outgoing request, this can be used to add your own keys.</p>
-<pre><code class="language-swift">let contentType = request.headers["Content-Type"]  </code></pre>
-<p>Or for outgoing requests:</p>
-<pre><code class="language-swift">let request = Request ...
-request.headers["Content-Type"] = "application/json"
-request.headers["Authorization"] = ... my auth token</code></pre>
-<h4 id="extending-headers">Extending Headers</h4>
-<p>We generally seek to improve code bases by removing stringly typed code where possible. We can add variables to the headers using generic extensions.</p>
-<pre><code class="language-swift">extension KeyAccessible where Key == HeaderKey, Value == String {
-    var customKey: String? {
-      get {
-        return self["Custom-Key"]
-      }
-      set {
-        self["Custom-Key"] = newValue
-      }
+<h2 id="example">Example</h2>
+<p>Let's create a simple <code>User</code> model.</p>
+<pre><code class="language-swift">final class User {
+    var name: String
+
+    init(name: String) {
+        self.name = name
     }
 }</code></pre>
-<p>With this pattern implemented, our string <code>"Custom-Key"</code> is contained in one section of our code. We can now access like this:</p>
-<pre><code class="language-swift">let customKey = request.headers.customKey
-
-// or
-
-let request = ...
-request.headers.customKey = "my custom value"</code></pre>
-<h3 id="body">Body</h3>
-<p>This is the body associated with the request and represents the general data payload. You can view more about body in the associated <a href="./body.html">docs</a></p>
-<p>For incoming requests, we'll often pull out the associated bytes like so:</p>
-<pre><code class="language-swift">let rawBytes = request.body.bytes</code></pre>
-<h2 id="content">Content</h2>
-<p>Generally when we're sending or receiving requests, we're using them as a way to transport content. For this, Vapor provides a convenient <code>data</code> variable associated with the request that prioritizes content in a consistent way.</p>
-<p>For example, say I receive a request to <code>http://vapor.codes?hello=world</code>.</p>
-<pre><code class="language-swift">let world = request.data["hello"].string</code></pre>
-<p>This same code will work if I receive a JSON request, for example:</p>
-<pre><code class="language-json">{
-  "hello": "world"
+<p>The first step to conforming to <code>Model</code> is to import Vapor and Fluent.</p>
+<pre><code class="language-swift">import Vapor
+import Fluent</code></pre>
+<p>Then add the conformance to your class.</p>
+<pre><code class="language-swift">final class User: Model { 
+    ...
 }</code></pre>
-<p>Will still be accessible through data.</p>
-<pre><code class="language-swift">let world = request.data["hello"].string</code></pre>
-<p>This also applies to multi-part requests and can even be extended to new types such as XML or YAML through middleware.</p>
-<p>If you'd prefer to access given types more explicitly, that's totally fine. The <code>data</code> variable is purely opt-in convenience for those who want it.</p>
-<h2 id="json">JSON</h2>
-<p>To access JSON directly on a given request, use the following:</p>
-<pre><code class="language-swift">let json = request.json["hello"]</code></pre>
-<h2 id="query">Query</h2>
-<p>The same applies to query convenience:</p>
-<pre><code class="language-swift">let query = request.query["hello"]</code></pre>
-<h2 id="key-paths">Key Paths</h2>
-<p>Key paths work on most Vapor types that can have nested key value objects. Here's a couple examples of how to access given the following json:</p>
-<pre><code class="language-json">{
-  "metadata": "some metadata",
-  "artists" : {
-    "href": "http://someurl.com",
-    "items": [
-      {
-        "name": "Van Gogh",
-      },
-      {
-        "name": "Mozart"
-      }
-    ]
-  }
+<p>The compiler will inform you that some methods need to be implemented to conform.</p>
+<h3 id="id">ID</h3>
+<p>The first required property is an identifier. This property will contain the identifier when the model is fetched from the database. If it is nil, it will be set when the model is saved.</p>
+<pre><code class="language-swift">final class User: Model {
+    var id: Node?
+    ...
 }</code></pre>
-<p>We could access the data in the following ways:</p>
-<h3 id="metadata">Metadata</h3>
-<p>Access top level values</p>
-<pre><code class="language-swift">let type = request.data["metadata"].string // "some metadata"</code></pre>
-<h3 id="items">Items</h3>
-<p>Access nested values</p>
-<pre><code class="language-swift">let items = request.data["artists", "items"] // [["name": "Van Gogh"], ["name": "Mozart"]]</code></pre>
-<h3 id="mixing-arrays-and-objects">Mixing Arrays and Objects</h3>
-<p>Get first artists</p>
-<pre><code class="language-swift">let first = request.data["artists", "items", 0] // ["name": "Van Gogh"]</code></pre>
-<h3 id="array-item">Array Item</h3>
-<p>Get key from array item</p>
-<pre><code class="language-swift">let firstName = request.data["artists", "items", 0, "name"] // "Van Gogh"</code></pre>
-<h3 id="array-comprehension">Array Comprehension</h3>
-<p>We can also smartly map an array of keys, for example, to just get the names of all of the artists, we could use the following</p>
-<pre><code class="language-swift">let names = request.data["artists", "items", "name"] // ["Van Gogh", "Mozart"]</code></pre>
+<h3 id="node-initializable">Node Initializable</h3>
+<p>The next requirement is a way to create the model from the persisted data. Model uses <code>NodeInitializable</code> to achieve this.</p>
+<pre><code class="language-swift">final class User: Model {
+    init(node: Node, in context: Context) throws {
+        id = try node.extract("id")
+        name = try node.extract("name")
+    }
+    ...
+}</code></pre>
+<p>The keys <code>id</code> and <code>name</code> are what we expect the columns or fields in the database to be named. The <code>extract</code> call is marked with a <code>try</code> because it will throw an error if the value is not present or is the wrong type. </p>
+<h3 id="node-representable">Node Representable</h3>
+<p>Now that we have covered initializing the model, we need to show it how to save back into the database. Model uses <code>NodeRepresentable</code> to achieve this.</p>
+<pre><code class="language-swift">final class User: Model {
+    func makeNode() throws -&gt; Node {
+        return try Node(node: [
+            "id": id,
+            "name": name
+        ])
+    }
+    ...
+}</code></pre>
+<p>When a <code>User</code> is saved, the <code>makeNode()</code> method will be called and the resulting <code>Node</code> will be saved to the database. The keys <code>id</code> and <code>name</code> are what we expect the columns or fields in the database to be named.</p>
+<h2 id="preparations">Preparations</h2>
+<p>Some databases, like MySQL, need to be prepared for a new schema. In MySQL, this means creating a new table. </p>
+<h3 id="prepare">Prepare</h3>
+<p>Let's assume we are using a SQL database. To prepare the database for our <code>User</code> class, we need to create a table. If you are using a database like Mongo, you can leave this method unimplemented.</p>
+<pre><code class="language-swift">final class User {
+    static func prepare(_ database: Database) throws {
+        try database.create("users") { users in
+            users.id()
+            users.string("name")
+        }
+    }
+    ...
+}</code></pre>
+<p>Here we create a table named <code>users</code> that has an identifier field and a string field with the key <code>name</code>. This matches both our <code>init(node: Node)</code> and <code>makeNode() -&gt; Node</code> methods.</p>
+<h3 id="revert">Revert</h3>
+<p>An optional preparation reversion can be created. This will be run if <code>vapor run prepare --revert</code> is called. </p>
+<pre><code class="language-swift">final class User {
+    static func revert(_ database: Database) throws {
+        try database.delete("users")
+    }
+    ...
+}</code></pre>
+<p>Here we are deleting the table named <code>users</code>.</p>
+<h3 id="droplet">Droplet</h3>
+<p>To run these prepations when the applications boots, you must add the Model to the <code>Droplet</code>.</p>
+<pre><code class="language-swift">let drop = Droplet(preparations: [User.self])</code></pre>
+<h2 id="full-model">Full Model</h2>
+<p>This is what our final <code>User</code> model looks like:</p>
+<pre><code class="language-swift">import Vapor
+import Fluent
+
+final class User: Model {
+    var id: Node?
+    var name: String
+
+    init(name: String) {
+        self.name = name
+    }
+
+    init(node: Node, in context: Context) throws {
+        id = try node.extract("id")
+        name = try node.extract("name")
+    }
+
+    func makeNode() throws -&gt; Node {
+        return try Node(node: [
+            "id": id,
+            "name": name
+        ])
+    }
+
+    static func prepare(_ database: Database) throws {
+        try database.create("users") { users in
+            users.id()
+            users.string("name")
+        }
+    }
+
+    static func revert(_ database: Database) throws {
+        try database.delete("users")
+    }
+}</code></pre>
+<h2 id="interacting">Interacting</h2>
+<p>Now that <code>User</code> conforms to <code>Model</code>, it has a plethora of new methods like <code>find()</code>, <code>query()</code>, <code>makeJSON()</code> and more.</p>
+<h3 id="fetch">Fetch</h3>
+<p>Models can be fetched by their database identifier.</p>
+<pre><code class="language-swift">let user = try User.find(42)</code></pre>
+<h3 id="save">Save</h3>
+<p>Newly created models can be saved to the database.</p>
+<pre><code class="language-swift">var user = User(name: "Vapor")
+try user.save()
+print(user.id) // prints the new id</code></pre>
+<h3 id="delete">Delete</h3>
+<p>Persisted models with identifiers can be deleted.</p>
+<pre><code class="language-swift">try user.delete()</code></pre>
+<h2 id="model-vs-entity">Model vs. Entity</h2>
+<p>Model has a couple of extra conformances that a pure Fluent entity doesn't have.</p>
+<pre><code class="language-swift">public protocol Model: Entity, JSONRepresentable, StringInitializable, ResponseRepresentable {}</code></pre>
+<p>As can be seen in the protocol, Vapor models can automatically convert to <code>JSON</code>, <code>Response</code>, and even be used in type-safe routing.</p>
         </main>
 
         <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
