@@ -282,7 +282,7 @@ return Response(status: .ok, body: body)</code></pre>
   }
 }</code></pre>
 <blockquote>
-<p>You may have noticed above, that the protocol throws, but our implementation does not. This is compeletely valid in Swift and will allow you to not throw if you're ever calling the function manually.</p>
+<p>You may have noticed above, that the protocol throws, but our implementation does not. This is completely valid in Swift and will allow you to not throw if you're ever calling the function manually.</p>
 </blockquote>
 <p>Now we're able to include our <code>VPR</code> file directly in our <code>Responses</code>.</p>
 <pre><code class="language-swift">drop.get("files", ":file-name") { request in

@@ -229,11 +229,11 @@
 <p>Vapor has a plethora of functionality for routing including route builders, groups, and collections. In this section, we will look at the basic of routing.</p>
 <h2 id="register">Register</h2>
 <p>The most basic route includes a method, path, and closure.</p>
-<pre><code class="language-swift">drop.get("welcome") { request in 
+<pre><code class="language-swift">drop.get("welcome") { request in
     return "Hello"
 }</code></pre>
 <p>The standard HTTP methods are available including <code>get</code>, <code>post</code>, <code>put</code>, <code>patch</code>, <code>delete</code>, and <code>options</code>.</p>
-<pre><code class="language-swift">drop.post("form") { request in 
+<pre><code class="language-swift">drop.post("form") { request in
     return "Submitted with a POST request"
 }</code></pre>
 <p>You can also use <code>any</code> to match all methods.</p>
@@ -244,13 +244,13 @@
 }</code></pre>
 <p>You can also use <code>/</code>, but commas are often easier to type and work better with type safe route <a href="parameters.html">parameters</a>.</p>
 <h2 id="alternate">Alternate</h2>
-<p>An alternate syntax that accepts a <code>Method</code> as the first parameter is also available. </p>
+<p>An alternate syntax that accepts a <code>Method</code> as the first parameter is also available.</p>
 <pre><code class="language-swift">drop.add(.trace, "welcome") { request in
     return "Hello"
 }</code></pre>
 <p>This may be useful if you want to register routes dynamically or use a less common method.</p>
 <h2 id="request">Request</h2>
-<p>Each route closure is given a single <a href="../http/request.html">Request</a>. This contains all of the data associated with the request that led to your route closure being called. </p>
+<p>Each route closure is given a single <a href="../http/request.html">Request</a>. This contains all of the data associated with the request that led to your route closure being called.</p>
 <h2 id="response-representable">Response Representable</h2>
 <p>A route closure can return in three ways:</p>
 <ul>
@@ -300,7 +300,7 @@
 <p>If you want to override this behavior, remove the <code>AbortMiddleware</code> from the <code>Droplet</code>'s middleware and add your own.</p>
 <h2 id="fallback">Fallback</h2>
 <p>Fallback routes allow you to match multiple layers of nesting slashes.</p>
-<pre><code class="language-swift">app.get("anything", "*") { request in 
+<pre><code class="language-swift">app.get("anything", "*") { request in
     return "Matches anything after /anything"
 }</code></pre>
 <p>For example, the above route matches all of the following and more:</p>

@@ -251,7 +251,7 @@
 <pre><code class="language-swift">return response</code></pre>
 <p>The response is returned and will chain back up any remaining middleware and back to the client.</p>
 <h2 id="request">Request</h2>
-<p>The middleware can also modify or intereact with the request.</p>
+<p>The middleware can also modify or interact with the request.</p>
 <pre><code class="language-swift">func respond(to request: Request, chainingTo next: Responder) throws -&gt; Response {
     guard request.cookies["token"] == "secret" else {
         throw Abort.badRequest
@@ -276,7 +276,7 @@
 
     // continue with Foo object
 }</code></pre>
-<p>This solution works, but it would get repetative if repeated throughout multiple routes. It can also easily lead to code duplication. Luckily, this error could be caught in a middleware instead.</p>
+<p>This solution works, but it would get repetitive if repeated throughout multiple routes. It can also easily lead to code duplication. Luckily, this error could be caught in a middleware instead.</p>
 <pre><code class="language-swift">final class FooErrorMiddleware: Middleware {
     func respond(to request: Request, chainingTo next: Responder) throws -&gt; Response {
         do {

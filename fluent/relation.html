@@ -255,12 +255,12 @@ let owner = try pet.parent(pet.ownerId, Owner.self).get()</code></pre>
     }
 }</code></pre>
 <p>Since we are extending <code>Pet</code>, we no longer need to use <code>pet.</code> before the <code>ownerId</code>. Furthermore, because we are providing the type information about <code>Owner</code> in the return type of the method, we no longer need to pass that as an argument.</p>
-<p>The <code>Parent&lt;T&gt;</code> type is a queryable object, meaning you could <code>delete()</code> the parent, <code>filter()</code>, etc. </p>
+<p>The <code>Parent&lt;T&gt;</code> type is a queryable object, meaning you could <code>delete()</code> the parent, <code>filter()</code>, etc.</p>
 <pre><code class="language-swift">try pet.owner().delete()</code></pre>
 <p>To fetch the parent, you must call <code>get()</code>.</p>
 <pre><code class="language-swift">let owner = try pet.owner().get()</code></pre>
 <h2 id="children">Children</h2>
-<p><code>Children</code> are the opposite side of the <code>Parent</code> relationship. Assuming the schema from the previous example, the pets could be retreived from an owner like so:</p>
+<p><code>Children</code> are the opposite side of the <code>Parent</code> relationship. Assuming the schema from the previous example, the pets could be retrieved from an owner like so:</p>
 <pre><code class="language-swift">let owner: Owner = ...
 let pets = owner.children(Pet.self).all()</code></pre>
 <p>Here only the type of child is required.</p>
@@ -275,7 +275,7 @@ let pets = owner.children(Pet.self).all()</code></pre>
 <p>The <code>Children&lt;T&gt;</code> is also a queryable object like <code>Parent&lt;T&gt;</code>. You can call <code>first()</code>, <code>all()</code>, <code>filter()</code>, etc.</p>
 <pre><code class="language-swift">let coolPets = try owner.pets().filter("type", .in, ["Dog", "Ferret"]).all()</code></pre>
 <h2 id="siblings">Siblings</h2>
-<p><code>Sibilings</code> work differently from <code>Children</code> or <code>Parent</code> since they require a <code>Pivot</code>. </p>
+<p><code>Siblings</code> work differently from <code>Children</code> or <code>Parent</code> since they require a <code>Pivot</code>.</p>
 <p>For an example, let's say we want to allow our pets to have multiple toys. But we also want the toys to be shared by multiple pets. We need a pivot entity for this.</p>
 <pre><code>pets
 - id
@@ -304,7 +304,7 @@ pets_toys
         return try siblings()
     }
 }</code></pre>
-<p>Now you are free to query pets and toys simiarly to children.</p>
+<p>Now you are free to query pets and toys similarly to children.</p>
 <pre><code class="language-swift">let pet: Pet = ...
 let toys = pet.toys().all()</code></pre>
 <h3 id="preparation">Preparation</h3>

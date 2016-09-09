@@ -225,17 +225,17 @@
         <main>
             <a href="https://github.com/vapor/documentation/blob/master/CONTRIBUTING.md" class="edit">✎ Edit on GitHub</a>
             <h1 id="query">Query</h1>
-<p>The <code>Query</code> class is what powers every interaction with Fluent. Whether you're fetching a model with <code>.find()</code> or saving to the database, there is a <code>Query</code> involved somewhere. </p>
+<p>The <code>Query</code> class is what powers every interaction with Fluent. Whether you're fetching a model with <code>.find()</code> or saving to the database, there is a <code>Query</code> involved somewhere.</p>
 <h2 id="querying-models">Querying Models</h2>
 <p>Every type that conforms to <a href="model.html">Model</a> gets a static <code>.query()</code> method.</p>
 <pre><code class="language-swift">let query = try User.query()</code></pre>
-<p>This is how you can create a <code>Query&lt;User&gt;</code>. </p>
+<p>This is how you can create a <code>Query&lt;User&gt;</code>.</p>
 <h3 id="no-database">No Database</h3>
 <p>The <code>.query()</code> method is marked with <code>try</code> because it can throw an error if the Model has not had its static database property set.</p>
 <pre><code class="language-swift">User.database = drop.database</code></pre>
-<p>This property is set automatically when you pass the Model as a preparation. </p>
+<p>This property is set automatically when you pass the Model as a preparation.</p>
 <h2 id="filter">Filter</h2>
-<p>The most common types of queries involve filtering data. </p>
+<p>The most common types of queries involve filtering data.</p>
 <pre><code class="language-swift">let smithsQuery = try User.query().filter("last_name", "Smith")</code></pre>
 <p>Here is the short hand for adding an <code>equals</code> filter to the query. As you can see, queries can be chained together.</p>
 <p>In additional to <code>equals</code>, there are many other types of <code>Filter.Comparison</code>.</p>
@@ -253,7 +253,7 @@
 <p>All of the matching entities can be fetched. This returns an array of <code>[Model]</code>, in this case users.</p>
 <pre><code class="language-swift">let usersOver21 = try User.query().filter("age", .greaterThanOrEquals, 21).all()</code></pre>
 <h3 id="first">First</h3>
-<p>The first matching entity can be fetch. This returns an optional <code>Model?</code>, in this case a user.</p>
+<p>The first matching entity can be fetched. This returns an optional <code>Model?</code>, in this case a user.</p>
 <pre><code class="language-swift">let firstSmith = try User.query().filter("last_name", "Smith").first()</code></pre>
 <h2 id="union">Union</h2>
 <p>Other Models can be joined onto your query to assist in filtering. The results must still be either <code>[Model]</code> or <code>Model?</code> for whichever type created the query.</p>
@@ -271,7 +271,7 @@ pets
 - id</code></pre>
 <p>Custom foreign keys can be provided through overloads to <code>union</code>.</p>
 <h2 id="raw-queries">Raw Queries</h2>
-<p>Since Fluent is focused on interacting with models, each Query requires a model type. If you want to do raw database queries that aren't based on a model, you should use the underlying Fluent Driver to do so. </p>
+<p>Since Fluent is focused on interacting with models, each Query requires a model type. If you want to do raw database queries that aren't based on a model, you should use the underlying Fluent Driver to do so.</p>
 <pre><code class="language-swift">if let mysql = drop.database?.driver as? MySQLDriver {
     let version = try mysql.raw("SELECT @@version")
 }</code></pre>

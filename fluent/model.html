@@ -353,6 +353,9 @@ print(user.id) // prints the new id</code></pre>
 <p>Model has a couple of extra conformances that a pure Fluent entity doesn't have.</p>
 <pre><code class="language-swift">public protocol Model: Entity, JSONRepresentable, StringInitializable, ResponseRepresentable {}</code></pre>
 <p>As can be seen in the protocol, Vapor models can automatically convert to <code>JSON</code>, <code>Response</code>, and even be used in type-safe routing.</p>
+<h2 id="options">Options</h2>
+<p>Change the table/collection name </p>
+<pre><code class="language-swift">static var entity = "new_name"</code></pre>
         </main>
 
         <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
