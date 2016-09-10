@@ -257,7 +257,7 @@ swift package init --type executable</code></pre>
 let package = Package(
     name: "HelloVapor",
     dependencies: [
-        .Package(url: "https://github.com/vapor/vapor.git", majorVersion: 0, minor: 16)
+        .Package(url: "https://github.com/vapor/vapor.git", majorVersion: 0, minor: 18)
     ]
 )</code></pre>
 <blockquote>
@@ -273,7 +273,7 @@ drop.get("/hello") { _ in
   return "Hello Vapor"
 }
 
-try drop.serve()</code></pre>
+drop.serve()</code></pre>
 <h2 id="build-and-run">Build and Run</h2>
 <p>The first <code>build</code> command can take a while to fetch dependencies.</p>
 <pre><code>swift build
@@ -282,7 +282,7 @@ try drop.serve()</code></pre>
 <p>If different, replace <code>HelloVapor</code> above with the name of your executable.</p>
 </blockquote>
 <h2 id="view">View</h2>
-<p>Go to your favorite browser and visit <code>http://localhost:8000/hello</code></p>
+<p>Go to your favorite browser and visit <code>http://localhost:8080/hello</code></p>
         </main>
 
         <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
