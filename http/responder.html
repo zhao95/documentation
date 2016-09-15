@@ -58,11 +58,6 @@
                             </a>
                         </li>
                                             <li class="">
-                            <a href="https://vapor.github.io/documentation/getting-started/install-swift-3.html">
-                                Install Swift 3
-                            </a>
-                        </li>
-                                            <li class="">
                             <a href="https://vapor.github.io/documentation/getting-started/install-toolbox.html">
                                 Install Toolbox
                             </a>
@@ -237,7 +232,7 @@
 </blockquote>
 <h2 id="simple">Simple</h2>
 <p>Of course, Vapor provides some conveniences for this, and in practice, we will often call:</p>
-<pre><code class="language-swift">try drop.serve()</code></pre>
+<pre><code class="language-swift">try drop.run()</code></pre>
 <h2 id="manual">Manual</h2>
 <p>As we just mentioned, the Vapor <code>Droplet</code> itself conforms to <code>Responder</code>, connecting it to the <code>Server</code>. This means if we wanted to serve our droplet manually, we could do:</p>
 <pre><code class="language-swift">let server = try Server&lt;TCPServerStream, Parser&lt;Request&gt;, Serializer&lt;Response&gt;&gt;(port: port)
