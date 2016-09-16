@@ -260,7 +260,7 @@ import Fluent</code></pre>
 <h3 id="node-representable">Node Representable</h3>
 <p>Now that we have covered initializing the model, we need to show it how to save back into the database. Model uses <code>NodeRepresentable</code> to achieve this.</p>
 <pre><code class="language-swift">final class User: Model {
-    func makeNode() throws -&gt; Node {
+    func makeNode(context: Context) throws -&gt; Node {
         return try Node(node: [
             "id": id,
             "name": name

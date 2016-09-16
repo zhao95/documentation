@@ -226,12 +226,12 @@
 <h2 id="html">HTML</h2>
 <p>Returning HTML, or any other non-rendered document, is simple. Just use the path of the document relative to the views directory.</p>
 <pre><code class="language-swift">drop.get("html") { request in
-    return try drop.view("index.html")
+    return try drop.view.make("index.html")
 }</code></pre>
 <h2 id="templating">Templating</h2>
 <p>Templated documents like mustache or stencil templates can take a <code>Context</code>.</p>
 <pre><code class="language-swift">drop.get("template") { request in
-    return try drop.view("index.template", [
+    return try drop.view.make("index.template", [
         "message": "Hello, world!"
     ])
 }</code></pre>
