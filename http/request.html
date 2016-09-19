@@ -285,13 +285,16 @@ request.headers.customKey = "my custom value"</code></pre>
 <h2 id="content">Content</h2>
 <p>Generally when we're sending or receiving requests, we're using them as a way to transport content. For this, Vapor provides a convenient <code>data</code> variable associated with the request that prioritizes content in a consistent way.</p>
 <p>For example, say I receive a request to <code>http://vapor.codes?hello=world</code>.</p>
-<pre><code class="language-swift">let world = request.data["hello"].string</code></pre>
+<pre><code class="language-swift">let world = request.data["hello"]?.string</code></pre>
 <p>This same code will work if I receive a JSON request, for example:</p>
 <pre><code class="language-json">{
   "hello": "world"
 }</code></pre>
 <p>Will still be accessible through data.</p>
-<pre><code class="language-swift">let world = request.data["hello"].string</code></pre>
+<pre><code class="language-swift">let world = request.data["hello"]?.string</code></pre>
+<blockquote>
+<p>Note: Force unwrap should never be used.</p>
+</blockquote>
 <p>This also applies to multi-part requests and can even be extended to new types such as XML or YAML through middleware.</p>
 <p>If you'd prefer to access given types more explicitly, that's totally fine. The <code>data</code> variable is purely opt-in convenience for those who want it.</p>
 <h2 id="json">JSON</h2>
