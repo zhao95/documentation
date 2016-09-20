@@ -107,7 +107,7 @@
                                 Views
                             </a>
                         </li>
-                                            <li class="">
+                                            <li class="active">
                             <a href="https://vapor.github.io/documentation/guide/controllers.html">
                                 Controllers
                             </a>
@@ -122,7 +122,7 @@
                                 Validation
                             </a>
                         </li>
-                                            <li class="active">
+                                            <li class="">
                             <a href="https://vapor.github.io/documentation/guide/provider.html">
                                 Provider
                             </a>
@@ -224,91 +224,91 @@
 
         <main>
             <a href="https://github.com/vapor/documentation/blob/master/CONTRIBUTING.md" class="edit">✎ Edit on GitHub</a>
-            <h1 id="provider">Provider</h1>
-<p>The <code>Provider</code> protocol creates a simple and predictable way for adding functionality and third party packages to your Vapor project.</p>
-<h2 id="adding-a-provider">Adding a Provider</h2>
-<p>Adding a provider to your application takes 2-3 steps.</p>
-<h3 id="add-package">Add Package</h3>
-<p>All of Vapor's providers end with the <code>-provider</code> syntax. You can see a list of <a href="https://github.com/vapor?utf8=✓&amp;query=-provider">available providers</a> by searching on our GitHub.</p>
-<p>To add the provider to your package, add it as a dependency in your <code>Package.swift</code> file.</p>
-<pre><code class="language-swift">let package = Package(
-    name: "MyApp",
-    dependencies: [
-        .Package(url: "https://github.com/vapor/vapor.git", majorVersion: 1, minor: 0),
-        .Package(url: "https://github.com/vapor/mysql-provider.git", majorVersion: 1, minor: 0)
-    ]
-)</code></pre>
-<blockquote>
-<p>It's important to <code>vapor clean</code> or <code>vapor build --clean</code> after adding new packages.</p>
-</blockquote>
-<h3 id="import">Import</h3>
-<p>Once the provider has been added, you can import it using <code>import VaporFoo</code> where <code>Foo</code> is the name of the provider.</p>
-<p>Here is what importing the MySQL provider looks like:</p>
-<pre><code class="language-swift">import Vapor
-import VaporMySQL
-
-let drop = Droplet(providers: [VaporMySQL.Provider.self])
-
-// ...
-
-drop.run()</code></pre>
-<p>Every provider comes with a class named <code>Provider</code>. Append the <code>Type</code> of this class to your <code>providers</code> array in the <code>Droplet</code>'s init method.</p>
-<h3 id="config">Config</h3>
-<p>Some drivers may require a configuration file. For example, <code>VaporMySQL</code> requires a <code>Config/mysql.json</code> file like the following:</p>
-<pre><code class="language-json">{
-    "host": "localhost",
-    "user": "root",
-    "password": "",
-    "database": "vapor"
-}</code></pre>
-<p>You will receive an error during the <code>Droplet</code>'s initialization if a configuration file is required.</p>
-<h2 id="advanced">Advanced</h2>
-<p>You may choose to initialize the provider yourself. If you do, simply use the <code>initializedProvider</code> array instead.</p>
-<pre><code class="language-swift">import Vapor
-import VaporMySQL
-
-let mysql = VaporMySQL.Provider(host: "localhost", user: "root")
-
-let drop = Droplet(initializedProviders: [mysql])
-
-...
-
-drop.run()</code></pre>
-<h2 id="create-a-provider">Create a Provider</h2>
-<p>Creating a provider is easy, you just need to create a package with a class <code>Provider</code> that conforms to <code>Vapor.Provider</code>.</p>
-<h3 id="example">Example</h3>
-<p>Here is what a provider for an example <code>Foo</code> package would look like. All the provider does is take a message, then print the message when the <code>Droplet</code> starts.</p>
-<pre><code class="language-swift">import Vapor
-
-public final class Provider: Vapor.Provider {
-    public let message: String
-    public let provided: Providable
-
-    public convenience init(config: Config) throws {
-        guard let message = config["foo", "message"].string else {
-            throw SomeError
+            <h1 id="controllers">Controllers</h1>
+<p>Controllers help you organize related functionality into a single place. They can also be used to create RESTful resources.</p>
+<h2 id="basic">Basic</h2>
+<p>A basic controller looks like the following:</p>
+<pre><code class="language-swift">final class HelloController {
+    func sayHello(_ req: Request) throws -&gt; ResponseRepresentable {
+        guard let name = req.data["name"] else { 
+            throw Abort.badRequest 
         }
-
-        try self.init(message: message)
-    }
-
-    public init(message: String) throws {
-        self.message = message
-    }
-
-    public func afterInit(_ drop: Droplet) {
-
-    }
-
-    public func beforeServe(_ drop: Droplet) {
-        drop.console.info(message)
+        return "Hello, \(name)"
     }
 }</code></pre>
-<p>This provider wil require a <code>Config/foo.json</code> file that looks like:</p>
-<pre><code class="language-json">{
-    "message": "The message to output"
+<p>Simple controllers don't need to conform to any protocols. You are free to design them however you see fit.</p>
+<h3 id="registering">Registering</h3>
+<p>The only required structure is the signature of each method in the controller. In order to register this method into the router, it must have a signature like <code>(Request) throws -&gt; ResponseRepresentable</code>.</p>
+<pre><code class="language-swift">let hc = HelloController()
+drop.get("hello", hc.sayHello)</code></pre>
+<p>Since the signature of our <code>sayHello</code> method matches the signature of the closure for the <code>drop.get</code> method, we can pass it directly.</p>
+<h3 id="type-safe">Type Safe</h3>
+<p>You can also use controller methods with type-safe routing.</p>
+<pre><code class="language-swift">final class HelloController {
+    ...
+
+    func sayHelloAlternate(_ req: Request, _ name: String) -&gt; ResponseRepresentable {
+        return "Hello, \(name)"
+    }
 }</code></pre>
-<p>The provider can also be initialized manually with the <code>init(message: String)</code> init.</p>
+<p>We add a new method called <code>sayHelloAlternate</code> to the <code>HelloController</code> that accepts a second parameter <code>name: String</code>.</p>
+<pre><code class="language-swift">let hc = HelloController()
+drop.get("hello", String.self, hc.sayHelloAlternate)</code></pre>
+<p>Since this type-safe <code>drop.get</code> accepts a signature <code>(Request, String) throws -&gt; ResponseRepresentable</code>, our method can now be used as the closure for this route. </p>
+<h2 id="resources">Resources</h2>
+<p>Controllers that conform to <code>ResourceRepresentable</code> can be easily registered into a router as a RESTful resource. Let's look at an example of a <code>UserController</code>.</p>
+<pre><code class="language-swift">final class UserController {
+    func index(_ request: Request) throws -&gt; ResponseRepresentable {
+        return try User.all().makeNode().converted(to: JSON.self)
+    }
+
+    func show(_ request: Request, _ user: User) -&gt; ResponseRepresentable {
+        return user
+    }
+}</code></pre>
+<p>Here is a typical user controller with an <code>index</code> and <code>show</code> route. Indexing returns a JSON list of all users and showing returns a JSON representation of a single user.</p>
+<p>We <em>could</em> register the controller like so:</p>
+<pre><code class="language-swift">let users = UserController()
+drop.get("users", users.index)
+drop.get("users", User.self, users.show)</code></pre>
+<p>But <code>ResourceRepresentable</code> makes this standard RESTful structure easy.</p>
+<pre><code class="language-swift">extension UserController: ResourceRepresentable {
+    func makeResource() -&gt; Resource&lt;User&gt; {
+        return Resource(
+            index: index,
+            show: show
+        )
+    }
+}</code></pre>
+<p>Conforming <code>UserController</code> to <code>ResourceRepresentable</code> requires that the signatures of the <code>index</code> and <code>show</code> methods match what the <code>Resource&lt;User&gt;</code> is expecting.</p>
+<p>Here is a peak into the <code>Resource</code> class.</p>
+<pre><code class="language-swift">final class Resource&lt;Model: StringInitializable&gt; {
+    typealias Multiple = (Request) throws -&gt; ResponseRepresentable
+    typealias Item = (Request, Model) throws -&gt; ResponseRepresentable
+
+    var index: Multiple?
+    var store: Multiple?
+    var show: Item?
+    var replace: Item?
+    var modify: Item?
+    var destroy: Item?
+    var clear: Multiple?
+    var aboutItem: Item?
+    var aboutMultiple: Multiple?
+
+    ...
+}</code></pre>
+<p>Now that <code>UserController</code> conforms to <code>ResourceRepresentable</code>, registering the routes is easy.</p>
+<pre><code class="language-swift">let users = UserController()
+drop.resource("users", users)</code></pre>
+<p><code>drop.resource</code> will take care of registering only the routes that have been supplied by the call to <code>makeResource()</code>. In this case, only the <code>index</code> and <code>show</code> routes will be supplied.</p>
+<blockquote>
+<p>Note: <code>drop.resource</code> also adds useful defaults for OPTIONS requests. These can be overriden.  </p>
+</blockquote>
+<h2 id="folder">Folder</h2>
+<p>Controllers can go anywhere in your application, but they are most often stored in the <code>Controllers/*</code> directory. </p>
+<h3 id="modules">Modules</h3>
+<p>If you are building a large application, you may want to create your controllers in a separate module. This will allow you to perform unit tests on your controllers. For more information on creating modules, visit the documentation for the <a href="https://swift.org/package-manager/">Swift Package Manager</a></p>
         </main>
 
         <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
