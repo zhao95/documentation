@@ -147,7 +147,7 @@
                                 Parameters
                             </a>
                         </li>
-                                            <li class="active">
+                                            <li class="">
                             <a href="https://vapor.github.io/documentation/routing/group.html">
                                 Group
                             </a>
@@ -192,7 +192,7 @@
                                 User
                             </a>
                         </li>
-                                            <li class="">
+                                            <li class="active">
                             <a href="https://vapor.github.io/documentation/auth/middleware.html">
                                 Middleware
                             </a>
@@ -249,41 +249,55 @@
 
         <main>
             <a href="https://github.com/vapor/documentation/blob/master/CONTRIBUTING.md" class="edit">✎ Edit on GitHub</a>
-            <h1 id="route-groups">Route Groups</h1>
-<p>Grouping routes together makes it easy to add common prefixes, middleware, or hosts to multiple routes.</p>
-<p>Route groups have two different forms: Group and Grouped.</p>
-<h3 id="group">Group</h3>
-<p>Group (without the &quot;ed&quot; at the end) takes a closure that is passed a <code>GroupBuilder</code>.</p>
-<pre><code class="language-swift">drop.group("v1") { v1 in
-    v1.get("users") { request in
-        // get the users
-    }
+            <h1 id="middleware">Middleware</h1>
+<p><code>AuthMiddleware</code> is at the core of adding authorization to your project. It is responsible for initializing dependencies, checking credentials, and handling sessions.</p>
+<h2 id="create">Create</h2>
+<p>Once you have something that conforms to <code>Auth.User</code>, you can create an <code>AuthMiddleware</code>. Let's assume we have a class <code>User</code> that conforms to <code>Auth.User</code>.</p>
+<blockquote>
+<p>Note: You may need to include a module name before <code>User</code> to disambiguate. </p>
+</blockquote>
+<pre><code class="language-swift">import Auth
+
+let auth = AuthMiddleware(user: User.self)</code></pre>
+<p>Creating the <code>AuthMiddleware</code> can be that simple, or you can customize it with additional initialization arguments.</p>
+<h3 id="cookie">Cookie</h3>
+<p>Customize the type of cookie the <code>AuthMiddleware</code> creates by passing a <code>CookieFactory</code>.</p>
+<pre><code class="language-swift">let auth = AuthMiddleware(user: User.self) { value in
+    return Cookie(
+        name: "vapor-auth",
+        value: value,
+        expires: Date().addingTimeInterval(60 * 60 * 5), // 5 hours
+        secure: true,
+        httpOnly: true
+    )
 }</code></pre>
-<h3 id="grouped">Grouped</h3>
-<p>Grouped returns a <code>GroupBuilder</code> that you can pass around.</p>
-<pre><code class="language-swift">let v1 = drop.grouped("v1")
-v1.get("users") { request in
-    // get the users
-}</code></pre>
-<h3 id="middleware">Middleware</h3>
-<p>You can add middleware to a group of routes. This is especially useful for authentication.</p>
-<pre><code class="language-swift">drop.group(AuthMiddleware()) { authorized in 
-    authorized.get("token") { request in
-        // has been authorized
-    }
-}</code></pre>
-<h3 id="host">Host</h3>
-<p>You can limit the host for a group of routes.</p>
-<pre><code>drop.group(host: "vapor.codes") { vapor
-    vapor.get { request in
-        // only responds to requests to vapor.codes
-    }
-}</code></pre>
-<h3 id="chaining">Chaining</h3>
-<p>Groups can be chained together.</p>
-<pre><code class="language-swift">drop.grouped(host: "vapor.codes").grouped(AuthMiddleware()).group("v1") { authedSecureV1 in
-    // add routes here
-}</code></pre>
+<h3 id="cache">Cache</h3>
+<p>A custom <code>CacheProtocol</code> can be passed as well. The <code>MemoryCache()</code> used by default is not persisted between server restarts and does not allow for sharing between multiple running instances.</p>
+<pre><code class="language-swift">import VaporRedis
+
+let redis = RedisCache()
+let auth = AuthMiddleware(user: User.self, cache: redis)</code></pre>
+<blockquote>
+<p>Note: This example uses the <a href="https://github.com/vapor/redis-provider">redis-provider</a> package.</p>
+</blockquote>
+<h3 id="realm">Realm</h3>
+<p>To customize the <code>AuthMiddleware</code> even further, you can use a custom <code>Realm</code>. The <code>Realm</code> takes the responsibility of registering and authenticating the user away from the <code>Auth.User</code> protocol. </p>
+<pre><code class="language-swift">let facebook = FacebookRealm()
+let auth = AuthMiddleware(user: User.self, realm: facebook)</code></pre>
+<blockquote>
+<p>Note: <code>FacebookRealm</code> is hypothetical.</p>
+</blockquote>
+<h2 id="add">Add</h2>
+<p>Once you've created the <code>AuthMiddleware</code>, you can add it to the <code>Droplet</code>.</p>
+<pre><code class="language-swift">let drop = Droplet(availableMiddleware: ["auth": auth])</code></pre>
+<p>Once you've added the <code>AuthMiddleware</code> to the available middleware dictionary, make sure to enable it in your <a href="../guide/middleware.html">middleware.json</a> configuration file.</p>
+<h3 id="sharing-cache">Sharing Cache</h3>
+<p>If you'd like the <code>Droplet</code> and the <code>AuthMiddleware</code> to share the same <code>CacheProtocol</code>, initialize it earlier and pass it to both.</p>
+<pre><code>import VaporRedis
+
+let redis = RedisCache()
+let auth = AuthMiddleware(user: User.self, cache: redis)
+let drop = Droplet(cache: redis, availableMiddleware: ["auth": auth])</code></pre>
         </main>
 
         <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>

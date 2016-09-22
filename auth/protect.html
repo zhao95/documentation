@@ -147,7 +147,7 @@
                                 Parameters
                             </a>
                         </li>
-                                            <li class="active">
+                                            <li class="">
                             <a href="https://vapor.github.io/documentation/routing/group.html">
                                 Group
                             </a>
@@ -202,7 +202,7 @@
                                 Request
                             </a>
                         </li>
-                                            <li class="">
+                                            <li class="active">
                             <a href="https://vapor.github.io/documentation/auth/protect.html">
                                 Protect
                             </a>
@@ -249,41 +249,22 @@
 
         <main>
             <a href="https://github.com/vapor/documentation/blob/master/CONTRIBUTING.md" class="edit">✎ Edit on GitHub</a>
-            <h1 id="route-groups">Route Groups</h1>
-<p>Grouping routes together makes it easy to add common prefixes, middleware, or hosts to multiple routes.</p>
-<p>Route groups have two different forms: Group and Grouped.</p>
-<h3 id="group">Group</h3>
-<p>Group (without the &quot;ed&quot; at the end) takes a closure that is passed a <code>GroupBuilder</code>.</p>
-<pre><code class="language-swift">drop.group("v1") { v1 in
-    v1.get("users") { request in
-        // get the users
+            <h1 id="protect">Protect</h1>
+<p>Once the <code>AuthMiddleware</code> has been enabled, you can use <code>ProtectMiddleware</code> to prevent certain routes from being accessed without authorization.</p>
+<h2 id="create">Create</h2>
+<p>To create a <code>ProtectMiddleware</code>, you must give it the error to throw in case authorization fails.</p>
+<pre><code class="language-swift">let error = Abort.custom(status: .forbidden, message: "Invalid credentials.")
+let protect = ProtectMiddleware(error: error)</code></pre>
+<p>Here we pass it a simple 403 response.</p>
+<h2 id="route-group">Route Group</h2>
+<p>Once the middleware has been created, you can add it to route groups. Learn more about middleware and routing in <a href="../routing/group.html">route groups</a>.</p>
+<pre><code>drop.grouped(protect).group("secure") { secure in
+    secure.get("about") { req in
+        let user = try req.user()
+        return user
     }
 }</code></pre>
-<h3 id="grouped">Grouped</h3>
-<p>Grouped returns a <code>GroupBuilder</code> that you can pass around.</p>
-<pre><code class="language-swift">let v1 = drop.grouped("v1")
-v1.get("users") { request in
-    // get the users
-}</code></pre>
-<h3 id="middleware">Middleware</h3>
-<p>You can add middleware to a group of routes. This is especially useful for authentication.</p>
-<pre><code class="language-swift">drop.group(AuthMiddleware()) { authorized in 
-    authorized.get("token") { request in
-        // has been authorized
-    }
-}</code></pre>
-<h3 id="host">Host</h3>
-<p>You can limit the host for a group of routes.</p>
-<pre><code>drop.group(host: "vapor.codes") { vapor
-    vapor.get { request in
-        // only responds to requests to vapor.codes
-    }
-}</code></pre>
-<h3 id="chaining">Chaining</h3>
-<p>Groups can be chained together.</p>
-<pre><code class="language-swift">drop.grouped(host: "vapor.codes").grouped(AuthMiddleware()).group("v1") { authedSecureV1 in
-    // add routes here
-}</code></pre>
+<p>Visiting <code>GET secure/about</code> will return the authorized user, or an error if no user is authorized.</p>
         </main>
 
         <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>

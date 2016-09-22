@@ -147,7 +147,7 @@
                                 Parameters
                             </a>
                         </li>
-                                            <li class="active">
+                                            <li class="">
                             <a href="https://vapor.github.io/documentation/routing/group.html">
                                 Group
                             </a>
@@ -187,7 +187,7 @@
                             <section>
                     <h3>Auth</h3>
                     <ul>
-                                            <li class="">
+                                            <li class="active">
                             <a href="https://vapor.github.io/documentation/auth/user.html">
                                 User
                             </a>
@@ -249,41 +249,92 @@
 
         <main>
             <a href="https://github.com/vapor/documentation/blob/master/CONTRIBUTING.md" class="edit">✎ Edit on GitHub</a>
-            <h1 id="route-groups">Route Groups</h1>
-<p>Grouping routes together makes it easy to add common prefixes, middleware, or hosts to multiple routes.</p>
-<p>Route groups have two different forms: Group and Grouped.</p>
-<h3 id="group">Group</h3>
-<p>Group (without the &quot;ed&quot; at the end) takes a closure that is passed a <code>GroupBuilder</code>.</p>
-<pre><code class="language-swift">drop.group("v1") { v1 in
-    v1.get("users") { request in
-        // get the users
+            <h1 id="auth">Auth</h1>
+<p>Authentication and authorization is focused around the <code>Auth.User</code> protocol. Authentication is analagous to asking: &quot;Who is this?&quot;, while authorization is analagous to asking: &quot;What can they do?&quot;. Vapor includes an extensible authentication system that you can use as a base for more sophisticated authorization.</p>
+<blockquote>
+<p>Note: An <a href="https://github.com/vapor/auth-example">auth-example</a> project is available on GitHub.</p>
+</blockquote>
+<h2 id="user-protocol">User Protocol</h2>
+<p>Any type can conform to the <code>Auth.User</code> protocol, but they are commonly added onto Fluent <code>Model</code>s.</p>
+<pre><code class="language-swift">import Vapor
+import Auth
+
+final class User: Model {
+    var id: Node?
+    var name: String
+
+    ...
+}
+
+extension User: Auth.User {
+    static func authenticate(credentials: Credentials) throws -&gt; Auth.User {
+
+    }
+
+    static func register(credentials: Credentials) throws -&gt; Auth.User {
+
     }
 }</code></pre>
-<h3 id="grouped">Grouped</h3>
-<p>Grouped returns a <code>GroupBuilder</code> that you can pass around.</p>
-<pre><code class="language-swift">let v1 = drop.grouped("v1")
-v1.get("users") { request in
-    // get the users
-}</code></pre>
-<h3 id="middleware">Middleware</h3>
-<p>You can add middleware to a group of routes. This is especially useful for authentication.</p>
-<pre><code class="language-swift">drop.group(AuthMiddleware()) { authorized in 
-    authorized.get("token") { request in
-        // has been authorized
+<p>Here is an example <code>User</code> class with the <code>Auth.User</code> protocol requirements stubbed. Note that the name of our class and the protocol are the same. This is why we use the <code>Auth.</code> prefix to differentiate the protocol from the <code>Auth</code> module from our <code>User</code> class.</p>
+<h3 id="authenticate">Authenticate</h3>
+<p>A user is authenticated when a set of credentials is passed to the static <code>authenticate</code> method and the matching user is returned.</p>
+<h4 id="credentials">Credentials</h4>
+<pre><code class="language-swift">protocol Credentials { }</code></pre>
+<p>The credentials protocol is an empty protocol that any type can conform to. This gives great flexibility to your authorization model, but also requires that you properly handle the case of unsupported credential types.</p>
+<h4 id="accesstoken">AccessToken</h4>
+<p>One of the simplest credential types included is <code>AccessToken</code>. It carries a <code>String</code> based token that will be used to authenticate the user.</p>
+<p>Let's look at how we might support the access token type.</p>
+<pre><code class="language-swift">static func authenticate(credentials: Credentials) throws -&gt; Auth.User {
+    switch credentials {
+    case let accessToken as AccessToken:
+        guard let user = try User.query().filter("access_token", accessToken.string).first() else {
+            throw Abort.custom(status: .forbidden, message: "Invalid access token.")    
+        }
+
+        return user
+    default:
+        let type = type(of: credentials)
+        throw Abort.custom(status: .forbidden, message: "Unsupported credential type: \(type).")
     }
 }</code></pre>
-<h3 id="host">Host</h3>
-<p>You can limit the host for a group of routes.</p>
-<pre><code>drop.group(host: "vapor.codes") { vapor
-    vapor.get { request in
-        // only responds to requests to vapor.codes
+<p>The first step is to cast the credentials to the type we want to support--in this case, <code>AccessToken</code>. If we do not have an access token, we will inform the client that the credentials are invalid.</p>
+<p>Once we have the access token, we will use it to query the <code>User</code> model for an entry with a matching access token. This is assuming the <code>users</code> table or collection has the access tokens stored on it. You may opt to store them somewhere else.</p>
+<p>Once we have found the user associated with the supplied access token, we simply return it.</p>
+<h4 id="identifier">Identifier</h4>
+<p>Vapor uses the <code>Identifier</code> credential type internally to lookup users from sessions. You can read more in the <a href="request.html">Request</a> section.</p>
+<h3 id="many-credentials">Many Credentials</h3>
+<p>Here is an example of a User that supports multiple credentials.</p>
+<pre><code class="language-swift">extension User: Auth.User {
+    static func authenticate(credentials: Credentials) throws -&gt; Auth.User {
+        let user: User?
+
+        switch credentials {
+        case let id as Identifier:
+            user = try User.find(id.id)
+        case let accessToken as AccessToken:
+            user = try User.query().filter("access_token", accessToken.string).first()
+        case let apiKey as APIKey:
+            user = try User.query().filter("email", apiKey.id).filter("password", apiKey.secret).first()
+        default:
+            throw Abort.custom(status: .badRequest, message: "Invalid credentials.")
+        }
+
+        guard let u = user else {
+            throw Abort.custom(status: .badRequest, message: "User not found.")
+        }
+
+        return u
+    }
+
+    static func register(credentials: Credentials) throws -&gt; Auth.User {
+        ...
     }
 }</code></pre>
-<h3 id="chaining">Chaining</h3>
-<p>Groups can be chained together.</p>
-<pre><code class="language-swift">drop.grouped(host: "vapor.codes").grouped(AuthMiddleware()).group("v1") { authedSecureV1 in
-    // add routes here
-}</code></pre>
+<blockquote>
+<p>Note: Try not to store passwords. If you must, hash and salt them.</p>
+</blockquote>
+<h3 id="register">Register</h3>
+<p>Similar to the authenticate method, the register method takes credentials. But instead of fetching the user from the data store, it provides a convenient way to create the user. You are not required to register your users through this method.</p>
         </main>
 
         <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
