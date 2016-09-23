@@ -272,7 +272,7 @@ let auth = AuthMiddleware(user: User.self)</code></pre>
     )
 }</code></pre>
 <h3 id="cache">Cache</h3>
-<p>A custom <code>CacheProtocol</code> can be passed as well. The <code>MemoryCache()</code> used by default is not persisted between server restarts and does not allow for sharing between multiple running instances.</p>
+<p>A custom <code>CacheProtocol</code> can be passed as well. The <code>MemoryCache</code> used by default is not persisted between server restarts and does not allow for sharing between multiple running instances.</p>
 <pre><code class="language-swift">import VaporRedis
 
 let redis = RedisCache()

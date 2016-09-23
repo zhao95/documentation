@@ -280,8 +280,8 @@ extension User: Auth.User {
 <p>A user is authenticated when a set of credentials is passed to the static <code>authenticate</code> method and the matching user is returned.</p>
 <h4 id="credentials">Credentials</h4>
 <pre><code class="language-swift">protocol Credentials { }</code></pre>
-<p>The credentials protocol is an empty protocol that any type can conform to. This gives great flexibility to your authorization model, but also requires that you properly handle the case of unsupported credential types.</p>
-<h4 id="accesstoken">AccessToken</h4>
+<p>The credentials protocol is an empty protocol that any type can conform to. This gives great flexibility to your authentication model, but also requires that you properly handle the case of unsupported credential types.</p>
+<h4 id="access-token">Access Token</h4>
 <p>One of the simplest credential types included is <code>AccessToken</code>. It carries a <code>String</code> based token that will be used to authenticate the user.</p>
 <p>Let's look at how we might support the access token type.</p>
 <pre><code class="language-swift">static func authenticate(credentials: Credentials) throws -&gt; Auth.User {
@@ -302,7 +302,9 @@ extension User: Auth.User {
 <p>Once we have found the user associated with the supplied access token, we simply return it.</p>
 <h4 id="identifier">Identifier</h4>
 <p>Vapor uses the <code>Identifier</code> credential type internally to lookup users from sessions. You can read more in the <a href="request.html">Request</a> section.</p>
-<h3 id="many-credentials">Many Credentials</h3>
+<h3 id="register">Register</h3>
+<p>Similar to the authenticate method, the register method takes credentials. But instead of fetching the user from the data store, it provides a convenient way to create the user. You are not required to register your users through this method.</p>
+<h2 id="example">Example</h2>
 <p>Here is an example of a User that supports multiple credentials.</p>
 <pre><code class="language-swift">extension User: Auth.User {
     static func authenticate(credentials: Credentials) throws -&gt; Auth.User {
@@ -333,8 +335,6 @@ extension User: Auth.User {
 <blockquote>
 <p>Note: Try not to store passwords. If you must, hash and salt them.</p>
 </blockquote>
-<h3 id="register">Register</h3>
-<p>Similar to the authenticate method, the register method takes credentials. But instead of fetching the user from the data store, it provides a convenient way to create the user. You are not required to register your users through this method.</p>
         </main>
 
         <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
