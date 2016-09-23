@@ -257,13 +257,14 @@
 <h2 id="how-to-read">How To Read</h2>
 <p>You can read this guide by clicking through the folders and markdown files on <a href="https://github.com/vapor/documentation">GitHub</a> or through the rendered <a href="https://vapor.github.io/documentation/">GitHub Pages</a>.</p>
 <h2 id="packages">Packages</h2>
-<p>Here are a list of all the Swift 3, linux-ready packages and modules provided open source by Vapor.</p>
+<p>Here are a list of all the packages and modules included with Vapor (also useable individually).</p>
 <ul>
 <li><a href="https://github.com/vapor/vapor">Vapor</a>: Swift's most used web framework.
 <ul>
-<li>Routing: Generic branch router.</li>
-<li>HTTPRouting: HTTP router specializations.</li>
-<li>Type-safe Routing: Generated route methods for type-safe parameters.</li>
+<li>Auth: User authentication and persistance. </li>
+<li>Sessions: Secure, ephemeral cookie based data storage.</li>
+<li>Cookies: HTTP cookies.</li>
+<li>Routing: Advanced router with type-safe parameterization.</li>
 </ul></li>
 <li><a href="https://github.com/vapor/fluent">Fluent</a>: Models, relationships, and querying for NoSQL and SQL databases.</li>
 <li><a href="https://github.com/vapor/engine">Engine</a>: Core transport layers.
@@ -272,12 +273,29 @@
 <li>URI: Pure Swift URI parsing and serializing.</li>
 <li>WebSockets: Full-duplex communication channels over a single TCP connection.</li>
 <li>SMTP: Send email using Sendgrid and Gmail.</li>
-<li>Transport: Streams and transfer protocols.</li>
 </ul></li>
-<li><a href="https://github.com/vapor/json">JSON</a>: Maps Foundation JSON to Swifty enum.</li>
+<li><a href="https://github.com/vapor/leaf">Leaf</a>: An extensible templating language.</li>
+<li><a href="https://github.com/vapor/json">JSON</a>: Maps Jay JSON to Vapor types.</li>
 <li><a href="https://github.com/vapor/console">Console</a>: Swift wrapper for console IO and commands.</li>
-<li><a href="https://github.com/vapor/node">Node</a>: A formatted data encapsulation meant to facilitate the object conversions.</li>
-<li><a href="https://github.com/vapor/tls">TLS</a>: Swift OpenSSL and TLS.</li>
+<li><a href="https://github.com/vapor/tls">TLS</a>: Swift wrapper for CLibreSSL's new TLS.</li>
+<li><a href="https://github.com/vapor/crypto">Crypto</a>: Cryptography from LibreSSL and Swift.
+<ul>
+<li>Digests: Hashing with and without authentication.</li>
+<li>Ciphers: Encryption and decryption</li>
+<li>Random: Psuedo and cryptographically secure randomness.</li>
+<li>BCrypt: Pure Swift implementation.</li>
+</ul></li>
+<li><a href="https://github.com/vapor/node">Node</a>: Data structure for easy type conversions.
+<ul>
+<li><a href="https://github.com/vapor/polymorphic">Polymorphic</a>: Syntax for easily accessing values from common types like JSON.</li>
+<li><a href="https://github.com/vapor/path-indexable">Path Indexable</a>: A protocol for powerful subscript access of common types like JSON.</li>
+</ul></li>
+<li><a href="https://github.com/vapor/core">Core</a>: Core extensions, type-aliases, and functions that facilitate common tasks.</li>
+<li><a href="https://github.com/vapor/socks">Socks</a>: Swift C Socket API wrapper.</li>
+</ul>
+<h2 id="providers">Providers</h2>
+<p>Here are a list of providers and third party packages that work great with Vapor.</p>
+<ul>
 <li><a href="https://github.com/vapor/mysql">MySQL</a>: Robust MySQL interface for Swift.
 <ul>
 <li><a href="https://github.com/vapor/mysql-driver">MySQL Driver</a>: MySQL driver for Fluent.</li>
@@ -293,14 +311,16 @@
 <li><a href="https://github.com/vapor/postgresql-driver">PostgreSQL Driver</a>: PostgreSQL driver for Fluent.</li>
 <li><a href="https://github.com/vapor/postgresql-provider">PostgreSQL Provider</a>: PostgreSQL provider for Vapor.</li>
 </ul></li>
+<li><a href="https://github.com/OpenKitten/MongoKitten">MongoKitten*</a>: Native MongoDB driver for Swift, written in Swift
+<ul>
 <li><a href="https://github.com/vapor/mongo-driver">Mongo Driver</a>: MongoKitten driver for Fluent.</li>
-<li><a href="https://github.com/vapor/polymorphic">Polymorphic</a>: Syntax for easily accessing values from generic data.</li>
-<li><a href="https://github.com/vapor/path-indexable">Path Indexable</a>: A protocol for powerful subscript access of data types.</li>
-<li><a href="https://github.com/vapor/core">Core</a>: Core extensions, type-aliases, and functions that facilitate common tasks.</li>
+<li><a href="https://github.com/vapor/mongo-provider">Mongo Provider</a>: MongoKitten provider for Vapor.</li>
+</ul></li>
+<li><a href="https://github.com/vapor/redbird">Redbird</a>: Pure-Swift Redis client implemented from the original protocol spec..
+<ul>
+<li><a href="https://github.com/vapor/redis-provider">Redis Provider</a>: Redis cache provider for Vapor.</li>
+</ul></li>
 </ul>
-<blockquote>
-<p>Not all packages may be up to date with the latest Swift snapshot or Vapor release. Updating packages is an easy and great way to contribute!</p>
-</blockquote>
 <h2 id="authors">Authors</h2>
 <p><a href="mailto:tanner@qutheory.io">Tanner Nelson</a>, <a href="mailto:logan@qutheory.io">Logan Wright</a>, and the hundreds of members of Vapor.</p>
         </main>
