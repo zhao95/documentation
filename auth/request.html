@@ -325,7 +325,7 @@ let key = APIKey(id: username, secret: password)</code></pre>
 }</code></pre>
 <p>Adding the <code>Identifier</code> case for <code>Credentials</code> is easy, just look up the user by the identifier.</p>
 <pre><code class="language-swift">let id = Identifier(id: 42)
-try req.auth.log(id)</code></pre>
+try req.auth.login(id)</code></pre>
 <p>Now you can manually log users in with just their identifiers.</p>
 <h3 id="ephemeral">Ephemeral</h3>
 <p>If you just want to log the user in for a single request, disable persistance. </p>

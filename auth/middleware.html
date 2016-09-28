@@ -302,7 +302,7 @@ let auth = AuthMiddleware(user: User.self, realm: facebook)</code></pre>
 <pre><code class="language-swift">let drop = Droplet(availableMiddleware: ["auth": auth])</code></pre>
 <p>Once you've added the <code>AuthMiddleware</code> to the available middleware dictionary, make sure to enable it in your <a href="../guide/middleware.html">middleware.json</a> configuration file.</p>
 <h3 id="sharing-cache">Sharing Cache</h3>
-<p>If you'd like the <code>Droplet</code> and the <code>AuthMiddleware</code> to share the same <code>CacheProtocol</code>, initialize it earlier and pass it to both.</p>
+<p>If you'd like the <code>Droplet</code> and the <code>AuthMiddleware</code> to share the same <code>CacheProtocol</code>, pass the same instance to both.</p>
 <pre><code>import VaporRedis
 
 let redis = RedisCache()
