@@ -252,6 +252,11 @@
                                 Client
                             </a>
                         </li>
+                                            <li class="">
+                            <a href="https://vapor.github.io/documentation/http/server.html">
+                                Server
+                            </a>
+                        </li>
                                         </ul>
                 </section>
                         </div>
@@ -293,8 +298,8 @@
     return "Hello, world!"
 }</code></pre>
 <p>This creates a new route on the <code>Droplet</code> that will match all <code>GET</code> requests to <code>/hello</code>.</p>
-<p>All route closures are passed an instance of <a href="../guide/request.html">Request</a> that contains information such as the URI requested and data sent.</p>
-<p>This route simply returns a string, but anything that is <a href="../guide/routing.html">ResponseRepresentable</a> can be returned. Learn more in the <a href="{../guide/routing.html">Routing</a> section of the guide.</p>
+<p>All route closures are passed an instance of <a href="../http/request.html">Request</a> that contains information such as the URI requested and data sent.</p>
+<p>This route simply returns a string, but anything that is <a href="../http/response-representable.html">ResponseRepresentable</a> can be returned. Learn more in the <a href="../routing/basic.html">Routing</a> section of the guide.</p>
 <p>Note: Xcode autocomplete may add extraneous type information to your closure's input arguments. This can be deleted to keep the code clean. If you'd like to keep the type information add <code>import HTTP</code> to the top of the file. </p>
 <h2 id="running">Running</h2>
 <p>At the bottom of the main file, make sure to serve your <code>Droplet</code>.</p>
